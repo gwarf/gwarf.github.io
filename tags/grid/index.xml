@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>grid on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/grid/</link>
+    <description>Recent content in grid on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Mon, 28 Jul 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/grid/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grid scripting in python</title>
+      <link>https://blog.bapt.name/2014/07/28/grid-scripting-in-python/</link>
+      <pubDate>Mon, 28 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/07/28/grid-scripting-in-python/</guid>
+      <description>Scripting Grid management using LCG and LFC python APIs lcg-util Man pages are present in the the lcg-util-devel package.
+man lcg_util_python man lcg_del_python lfc-python Man pages are present in the lfc-python package.
+man lfc_python man lfc2_python Documentation  Gilda Wiki LFC @ Sourcearchive  </description>
+    </item>
+    
+    <item>
+      <title>checking se and lfc consistency</title>
+      <link>https://blog.bapt.name/2014/02/11/checking-se-and-lfc-consistency/</link>
+      <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/02/11/checking-se-and-lfc-consistency/</guid>
+      <description>Dealing with inconsistency between the LFC and DPM The biomed VO team made accessible some useful tools to enforce consistency of Storage Elements (SE) and Logical File Catalog (LFC) available on github.
+In the neugrid4you project we have a lot of big dataset made available to our user community, but some of the datasets are very big, (ADNI is something like 30 GiB) and we have to copy and register them in the grid on multiple SE and register in our LFC.</description>
+    </item>
+    
+  </channel>
+</rss>

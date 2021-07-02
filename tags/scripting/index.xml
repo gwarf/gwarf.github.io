@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>scripting on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/scripting/</link>
+    <description>Recent content in scripting on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Mon, 28 Jul 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/scripting/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grid scripting in python</title>
+      <link>https://blog.bapt.name/2014/07/28/grid-scripting-in-python/</link>
+      <pubDate>Mon, 28 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/07/28/grid-scripting-in-python/</guid>
+      <description>Scripting Grid management using LCG and LFC python APIs lcg-util Man pages are present in the the lcg-util-devel package.
+man lcg_util_python man lcg_del_python lfc-python Man pages are present in the lfc-python package.
+man lfc_python man lfc2_python Documentation  Gilda Wiki LFC @ Sourcearchive  </description>
+    </item>
+    
+  </channel>
+</rss>
