@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sensu on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/sensu/</link>
+    <description>Recent content in sensu on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Sat, 25 Apr 2020 15:56:13 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/sensu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Monitoring with Sensu</title>
+      <link>https://blog.bapt.name/2020/04/25/monitoring-with-sensu/</link>
+      <pubDate>Sat, 25 Apr 2020 15:56:13 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/25/monitoring-with-sensu/</guid>
+      <description>Some notes taken during a deployment of Sensu with one backend server and some nodes running agents.
+Installing Sensu Follow the official documentation.
+Installing the backend # Add the Sensu repository curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash # Install the sensu-go-backend package sudo yum install sensu-go-backend # Copy the config template from the docs sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml # Start sensu-backend sudo systemctl enable --now sensu-backend # Initialise sudo systemctl status -l sensu-backend export SENSU_BACKEND_CLUSTER_ADMIN_USERNAME=YOUR_USERNAME export SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD=YOUR_PASSWORD sensu-backend init # Check that backend replies curl http://127.</description>
+    </item>
+    
+  </channel>
+</rss>

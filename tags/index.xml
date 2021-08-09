@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/</link>
+    <description>Recent content in Tags on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Thu, 09 Jul 2020 14:36:23 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>archlinux</title>
+      <link>https://blog.bapt.name/tags/archlinux/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/archlinux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bitwarden</title>
+      <link>https://blog.bapt.name/tags/bitwarden/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/bitwarden/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://blog.bapt.name/tags/linux/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nitrokey</title>
+      <link>https://blog.bapt.name/tags/nitrokey/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/nitrokey/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>security</title>
+      <link>https://blog.bapt.name/tags/security/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/security/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sysadmin</title>
+      <link>https://blog.bapt.name/tags/sysadmin/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/sysadmin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>adsl</title>
+      <link>https://blog.bapt.name/tags/adsl/</link>
+      <pubDate>Wed, 20 May 2020 12:50:27 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/adsl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>openmptcprouter</title>
+      <link>https://blog.bapt.name/tags/openmptcprouter/</link>
+      <pubDate>Wed, 20 May 2020 12:50:27 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/openmptcprouter/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>qos</title>
+      <link>https://blog.bapt.name/tags/qos/</link>
+      <pubDate>Wed, 20 May 2020 12:50:27 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/qos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>arp</title>
+      <link>https://blog.bapt.name/tags/arp/</link>
+      <pubDate>Sat, 02 May 2020 18:19:48 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/arp/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

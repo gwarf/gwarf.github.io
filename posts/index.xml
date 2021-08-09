@@ -1,0 +1,2295 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Posts on J&#39;aime pas les piles</title>
+		<link>https://blog.bapt.name/posts/</link>
+		<description>Recent content in Posts on J&#39;aime pas les piles</description>
+		<generator>Hugo -- gohugo.io</generator>
+		<language>en-us</language>
+		<copyright>This work is licensed under WTFPL.</copyright>
+		<lastBuildDate>Thu, 09 Jul 2020 14:36:23 +0200</lastBuildDate>
+		<atom:link href="https://blog.bapt.name/posts/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>Using Nitrokey Pro and Fido2</title>
+			<link>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</link>
+			<pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</guid>
+			<description>In order to store and protect my credentials and to simplify 2 Factor authentication I&amp;rsquo;ve bought some USB keys from Nitrokey.
+While it may be possible to find more complete or fancy solutions I selected Nitrokey, a German company, as both hardware and software is Open Source and I trust this way more than a black box provided by a company that is asking to get some blind trust.
+For storing and protecting GPG or S/MIME key I&amp;rsquo;ve choosed a Nitrokey Pro 2 USB key.</description>
+			<content type="html"><![CDATA[<p>In order to store and protect my credentials and to simplify 2 Factor
+authentication I&rsquo;ve bought some USB keys from <a href="https://www.nitrokey.com">Nitrokey</a>.</p>
+<p>While it may be possible to find more complete or fancy solutions I selected
+<strong>Nitrokey</strong>, a German company, as both hardware and software is Open Source
+and I trust this way more than a black box provided by a company that is asking
+to get some blind trust.</p>
+<p>For storing and protecting GPG or S/MIME key I&rsquo;ve choosed a <a href="https://www.nitrokey.com/files/doc/Nitrokey_Pro_factsheet.pdf">Nitrokey Pro
+2</a> USB key.</p>
+<p>For simplifying authentication I&rsquo;ve also selected a <a href="https://www.nitrokey.com/files/doc/Nitrokey_FIDO2_factsheet.pdf">Nitrokey
+FIDO2</a>), it
+can be use for passwordless authentication (FIDO2) or as as a second
+authentification factor (U2F).</p>
+<p>I will be using mainly on my GNU/Linux Archlinux personal desktop and on my
+work MacOS X laptop. I may also try it on Windows 10.</p>
+<p>I will be using my existing personal GPG key and my work S/MIME certificate
+from Sectito and part of the Interoperable Global Trust Federation
+<a href="https://www.igtf.net/">IGTF</a>, as since years (decades in fact :) ) an
+X509-based Public Key Infrastructure (PKI) is used to identify and authorize
+access to the computing and storage resources. More and more services are now
+doing Federated authentication via <a href="https://openid.net/connect/">OpenID
+Connect</a> and <a href="https://www.oasis-open.org/standards#samlv2.">SAML
+2.0</a>, but
+<a href="https://tools.ietf.org/html/rfc5280">X509</a> certificates will be there for some
+more time.
+If you want to learn a bit about the European EGI distributed infrastructure
+supporting scientific computing you can start at <a href="https://egi.eu">EGI</a>.</p>
+<p>My first intent is to make use of the Nitrokey Pro 2 to sign my messages using
+mutt (what else?). As said my personal messages are signed using my PGP/GPG
+key, and my work emails are signed using my S/MIME certificate.</p>
+<p>In case you don&rsquo;t already have a GPG key you can create one on your comupter
+and then import it in the Nitrokey, thus allowing you to backup it elsewhere.
+Nitrokey provide a clean documentation about <a href="https://www.nitrokey.com/documentation/openpgp-create-backup">generating your GPG
+key</a>.
+I also put together some notes/links in <a href="https://gist.github.com/gwarf/e017afb1e627c86d5cf753579cf28b3a">a gist</a>.</p>
+<p>I also want to use the Nitrokey FIDO2 to protect access to my
+<a href="https://bitwarden.com">BitWarden</a> password manager - BitWarden is similar to
+LastPass or 1password, but it&rsquo;s Open Source and you can host the
+synchronisation server on premise if needed. I highly recommned using BitWarden
+too.</p>
+<h2 id="using-the-nitrokey-pro-2-with-smime">Using the Nitrokey Pro 2 with S/MIME</h2>
+<p>According to <a href="https://www.nitrokey.com/documentation/smime-email-encryption">Nitrokey Pro 2 documentation for
+S/MIME</a> it&rsquo;s
+required to install <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.  According to
+the <a href="https://wiki.archlinux.org/index.php/Smartcards">Archlinux wiki</a>, <strong>pcsc</strong>
+and <strong>ccid</strong> can help.</p>
+<p>They can be installed from the community repository:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ trizen -S opensc pcsc-tools ccid
+</code></pre></div><p>Then edit <code>/etc/opensc.conf</code> to appen <code>enable_pinpad = false</code> in the
+configuration block and start <code>pcscd.service</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ sudo systemctl start pcscd.service
+</code></pre></div><p>The smart card should show up:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ openpgp-tool -C -K
+Using reader with a card: Nitrokey Nitrokey Pro <span class="o">(</span>0000000000000000000<span class="o">(</span>...<span class="o">)</span>16<span class="o">)</span> <span class="m">00</span> <span class="m">00</span>
+AID:             d2:76:00:01:24:01:<span class="o">(</span>...<span class="o">)</span>:00:00:80:16:00:00
+Version:         3.3
+Manufacturer:    ZeitControl
+Serial number:   00<span class="o">(</span>...<span class="o">)</span><span class="m">16</span>
+Aut Algorithm:   RSA4096
+Aut Create Date: 2020-07-09 16:39:14
+Aut Fingerprint: 9e:4a:04:77:6b:6d:36:<span class="o">(</span>...<span class="o">)</span>:5c:70:11:5e:f0:57:e3
+Dec Algorithm:   RSA4096
+Dec Create Date: 2020-07-09 16:37:12
+Dec Fingerprint: f3:67:ba:47:cd:ed:90:<span class="o">(</span>...<span class="o">)</span>:1b:14:a2:b2:22:c2:11:ac:0d
+Sig Algorithm:   RSA4096
+Sig Create Date: 2020-07-09 16:38:47
+Sig Fingerprint: 3f:e2:db:50:71:72:<span class="o">(</span>...<span class="o">)</span>:ba:20:e5:4d:4f:bc:01:ce:ba:44
+</code></pre></div><p>You can also scan for the card reader using <code>pcsc_scan</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ pcsc_scan
+</code></pre></div><p>Then the key and certificate pair can be copied from the p12 archive containing
+the S/MIME certificate to the key:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ pkcs15-init --delete-objects privkey,pubkey --id <span class="m">3</span> --store-private-key baptiste_grenier_until_2021_02.p12<span class="o">[</span>0/3084<span class="o">]</span>t pkcs12 --auth-id <span class="m">3</span> --verify-pin
+Using reader with a card: Nitrokey Nitrokey Pro <span class="o">(</span>0000000000000000000<span class="o">(</span>...<span class="o">)</span>16<span class="o">)</span> <span class="m">00</span> <span class="m">00</span>
+User PIN required.
+Please enter User PIN <span class="o">[</span>Admin PIN<span class="o">]</span>:
+Deleted <span class="m">2</span> objects
+error:23076071:PKCS12 routines:PKCS12_parse:mac verify failure
+Please enter passphrase to unlock secret key:
+Importing <span class="m">1</span> certificates:
+  0: /DC<span class="o">=</span>org/DC<span class="o">=</span>terena/DC<span class="o">=</span>tcs/C<span class="o">=</span>NL/O<span class="o">=</span>Stichting EGI/OU<span class="o">=</span>Operations/CN<span class="o">=</span>Baptiste Grenier
+❯ pkcs15-init --delete-objects privkey,pubkey --id <span class="m">2</span> --store-private-key baptiste_grenier_until_2021_02.p12 --format pkcs12 --auth-id <span class="m">3</span> --verify-pin
+Using reader with a card: Nitrokey Nitrokey Pro <span class="o">(</span>0000000000000000000<span class="o">(</span>...<span class="o">)</span>16<span class="o">)</span> <span class="m">00</span> <span class="m">00</span>
+User PIN required.
+Please enter User PIN <span class="o">[</span>Admin PIN<span class="o">]</span>:
+Deleted <span class="m">2</span> objects
+error:23076071:PKCS12 routines:PKCS12_parse:mac verify failure
+Please enter passphrase to unlock secret key:
+Importing <span class="m">1</span> certificates:
+  0: /DC<span class="o">=</span>org/DC<span class="o">=</span>terena/DC<span class="o">=</span>tcs/C<span class="o">=</span>NL/O<span class="o">=</span>Stichting EGI/OU<span class="o">=</span>Operations/CN<span class="o">=</span>Baptiste Grenier
+Failed to store private key: Not supported
+</code></pre></div><p>According to the Nitrokey documentation the errors can be ignored.</p>
+<h3 id="using-neomutt-with-smime-certificate-on-the-nitrokey-pro-2">Using neomutt with S/MIME certificate on the Nitrokey Pro 2</h3>
+<h2 id="using-the-nitrokey-pro-2-with-gpgpgp">Using the Nitrokey Pro 2 with GPG/PGP</h2>
+<h3 id="preparing-the-gpg-keys">Preparing the GPG keys</h3>
+<p>By security I will not keep the master key on the Nitrokey, but store 3
+different secret subkeys each limited to a specific usage, allowing to manage
+them individually:</p>
+<ul>
+<li>one for signing</li>
+<li>one for encrypting</li>
+<li>one for authenticating</li>
+</ul>
+<p>The master secret key should be exported and deleted from local keyring and
+saved in a secure location (or even multiple secure locations).</p>
+<h3 id="setup-on-archlinux">Setup on Archlinux</h3>
+<p>As per <a href="https://www.nitrokey.com/documentation/installation#p:nitrokey-pro&amp;os:linux">Nitrokey
+documentation</a>
+<code>libccid</code> is used to interact with the OpenPGP smart card in the Nitrokey.</p>
+<p>It doesn&rsquo;t seem to be available by default in Archlinux, but searching the
+repositories using <a href="">trizen</a> I found some nitrokey stuff:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ trizen -Ss nitrokey
+extra/libnitrokey 3.5-2
+    Communicate with Nitrokey stick devices in a clean and easy manner
+extra/nitrokey-app 1.4-2
+    Nitrokey management application
+aur/libnitrokey-git 3.4.1r781.ef171df-1 <span class="o">[</span>unmaintained<span class="o">]</span> <span class="o">[</span>1+<span class="o">]</span> <span class="o">[</span>0.00%<span class="o">]</span> <span class="o">[</span><span class="m">21</span> Aug 2018<span class="o">]</span>
+    Communicate with Nitrokey stick devices in a clean and easy manner
+aur/nitrocli 0.3.1-1 <span class="o">[</span>2+<span class="o">]</span> <span class="o">[</span>0.00%<span class="o">]</span> <span class="o">[</span><span class="m">4</span> Jan 2020<span class="o">]</span>
+    Command-line interface <span class="k">for</span> Nitrokey devices
+</code></pre></div><p>So I installed and gave a try at <code>nitokey-app</code> that seems to be an official
+application by Nitrokey folks, versions for the various OS can be found on
+<a href="https://www.nitrokey.com/download">their website</a>.</p>
+<p>Forward future jump: in fact it&rsquo;s possible to do everything using <code>gpg</code>.</p>
+<p>The first step si to <strong>Configure</strong> it by <strong>Changing the User and Admin PINs</strong>.
+For reference default User PIN is 123456, and Default Admin PIN is 12345678.</p>
+<p>It can be done from the Menu of the <a href="https://www.nitrokey.com/documentation/change-user-and-admin-pin">Nitrokey
+App</a>.</p>
+<p>As said I&rsquo;m using BitWarden so I will generate and store the PINs in BitWarden,
+as it&rsquo;s always handy to be able to check the PIN there before locking the
+Nitrokey at the 3rd failed unlocking tentative.</p>
+<p>Once the PINs have been replaced, the next step is importing the GPG keys in
+the Nitrokey Pro 2.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Once plugged the key should show be available to gpg</span>
+❯ gpg --card-status
+Application <span class="nb">type</span> .: OpenPGP
+Version ..........: 3.3
+Manufacturer .....: ZeitControl
+<span class="o">(</span>...<span class="o">)</span>
+Name of cardholder: <span class="o">[</span>not set<span class="o">]</span>
+Language prefs ...: de
+Salutation .......:
+URL of public key : <span class="o">[</span>not set<span class="o">]</span>
+Login data .......: <span class="o">[</span>not set<span class="o">]</span>
+Signature PIN ....: forced
+Key attributes ...: rsa2048 rsa2048 rsa2048
+Max. PIN lengths .: <span class="m">64</span> <span class="m">64</span> <span class="m">64</span>
+PIN retry counter : <span class="m">3</span> <span class="m">0</span> <span class="m">3</span>
+Signature counter : <span class="m">0</span>
+KDF setting ......: off
+Signature key ....: <span class="o">[</span>none<span class="o">]</span>
+Encryption key....: <span class="o">[</span>none<span class="o">]</span>
+Authentication key: <span class="o">[</span>none<span class="o">]</span>
+General key info..: <span class="o">[</span>none<span class="o">]</span>
+</code></pre></div><p>Let&rsquo;s configure the card, you should be asked for the Admin PIN when updating
+the information:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ gpg --card-edit
+
+gpg/card&gt; admin
+Admin commands are allowed
+
+gpg/card&gt; name
+Cardholder<span class="s1">&#39;s surname: Baptiste
+</span><span class="s1">Cardholder&#39;</span>s given name: Grenier
+
+gpg/card&gt; sex
+Salutation <span class="o">(</span><span class="nv">M</span> <span class="o">=</span> Mr., <span class="nv">F</span> <span class="o">=</span> Ms., or space<span class="o">)</span>: M
+
+gpg/card&gt; lang
+Language preferences: fr
+
+gpg/card&gt; key-attr
+Changing card key attribute <span class="k">for</span>: Signature key
+Please <span class="k">select</span> what kind of key you want:
+   <span class="o">(</span>1<span class="o">)</span> RSA
+   <span class="o">(</span>2<span class="o">)</span> ECC
+Your selection? <span class="m">1</span>
+What keysize <span class="k">do</span> you want? <span class="o">(</span>2048<span class="o">)</span> <span class="m">4096</span>
+The card will now be re-configured to generate a key of <span class="m">4096</span> bits
+Changing card key attribute <span class="k">for</span>: Encryption key
+Please <span class="k">select</span> what kind of key you want:
+   <span class="o">(</span>1<span class="o">)</span> RSA
+   <span class="o">(</span>2<span class="o">)</span> ECC
+Your selection? <span class="m">1</span>
+What keysize <span class="k">do</span> you want? <span class="o">(</span>2048<span class="o">)</span> <span class="m">4096</span>
+The card will now be re-configured to generate a key of <span class="m">4096</span> bits
+Changing card key attribute <span class="k">for</span>: Authentication key
+Please <span class="k">select</span> what kind of key you want:
+   <span class="o">(</span>1<span class="o">)</span> RSA
+   <span class="o">(</span>2<span class="o">)</span> ECC
+Your selection? <span class="m">1</span>
+What keysize <span class="k">do</span> you want? <span class="o">(</span>2048<span class="o">)</span> <span class="m">4096</span>
+The card will now be re-configured to generate a key of <span class="m">4096</span> bits
+
+gpg/card&gt; list
+
+Reader ...........: 20A0:4108:0000000000000000000<span class="o">(</span>...<span class="o">)</span>16:0
+Application ID ...: D2760001240103030005000<span class="o">(</span>...<span class="o">)</span><span class="m">160000</span>
+Application <span class="nb">type</span> .: OpenPGP
+Version ..........: 3.3
+Manufacturer .....: ZeitControl
+Serial number ....: 000<span class="o">(</span>...<span class="o">)</span><span class="m">16</span>
+Name of cardholder: Grenier Baptiste
+Language prefs ...: fr
+Salutation .......: Mr.
+URL of public key : https://keys.bapt.name/pubkey.asc
+Login data .......: <span class="o">[</span>not set<span class="o">]</span>
+Signature PIN ....: forced
+Key attributes ...: rsa4096 rsa4096 rsa4096
+Max. PIN lengths .: <span class="m">64</span> <span class="m">64</span> <span class="m">64</span>
+PIN retry counter : <span class="m">3</span> <span class="m">0</span> <span class="m">3</span>
+Signature counter : <span class="m">0</span>
+KDF setting ......: off
+Signature key ....: <span class="o">[</span>none<span class="o">]</span>
+Encryption key....: <span class="o">[</span>none<span class="o">]</span>
+Authentication key: <span class="o">[</span>none<span class="o">]</span>
+General key info..: <span class="o">[</span>none<span class="o">]</span>
+
+gpg/card&gt; quit
+</code></pre></div><p>Let&rsquo;s now add the three subkeys. As you can see from the following output, I&rsquo;ve
+got one master key, that is only used to manage the secret subkeys and that is
+ideally meant to be kept offilne at a secure place, and 3 secret subkeys that
+are used for only one purpose: (E)ncrypting, (S)igning and (A)uthenticating.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ gpg --edit-key --expert 0xCDA18F02
+gpg <span class="o">(</span>GnuPG<span class="o">)</span> 2.2.20<span class="p">;</span> Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2020</span> Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Secret key is available.
+
+sec  rsa4096/XXXXXXXXXXXXXXXX
+     created: 2019-04-19  expires: never       usage: SC
+     trust: ultimate      validity: ultimate
+ssb  rsa4096/XXXXXXXXXXXXXXXX
+     created: 2020-07-09  expires: never       usage: E
+ssb  rsa4096/XXXXXXXXXXXXXXXX
+     created: 2020-07-09  expires: never       usage: S
+ssb  rsa4096/XXXXXXXXXXXXXXXX
+     created: 2020-07-09  expires: never       usage: A
+<span class="o">[</span>ultimate<span class="o">]</span> <span class="o">(</span>1<span class="o">)</span>. Baptiste Grenier &lt;baptiste@bapt.name&gt;
+<span class="o">[</span>ultimate<span class="o">]</span> <span class="o">(</span>2<span class="o">)</span>  Baptiste Grenier <span class="o">(</span>EGI<span class="o">)</span> &lt;baptiste.grenier@egi.eu&gt;
+<span class="o">[</span>ultimate<span class="o">]</span> <span class="o">(</span>3<span class="o">)</span>  Baptiste Grenier &lt;gwarf@gwarf.org&gt;
+
+<span class="c1"># Select the first key that will be used for (E)ncryption</span>
+gpg&gt; key <span class="m">1</span>
+
+gpg&gt; keytocard
+Please <span class="k">select</span> where to store the key:
+   <span class="o">(</span>2<span class="o">)</span> Encryption key
+Your selection? <span class="m">2</span>
+
+<span class="c1"># Provide the GPG key passphrase to unlock the gpg secret sub key</span>
+<span class="c1"># Provide the Nitrokey Administrator PIN code</span>
+
+<span class="c1"># Then use the key command to select the key for (S)igning (this command is</span>
+<span class="c1"># used to toggle selection of a key, beware of not having multiple keys</span>
+<span class="c1"># selected together) enable the second key</span>
+<span class="c1"># Deselect key 1</span>
+gpg&gt; key <span class="m">1</span>
+
+<span class="c1"># Select key 2</span>
+gpg&gt; key <span class="m">2</span>
+
+gpg&gt; keytocard
+Please <span class="k">select</span> where to store the key:
+   <span class="o">(</span>1<span class="o">)</span> Signature key
+   <span class="o">(</span>3<span class="o">)</span> Authentication key
+Your selection? <span class="m">1</span>
+
+<span class="c1"># Finally do the same thing for the authentication key</span>
+<span class="c1"># used to toggle selection of a key, beware of not having multiple keys</span>
+<span class="c1"># selected together) enable the second key</span>
+
+<span class="c1"># Deselect key 2</span>
+gpg&gt; key <span class="m">2</span>
+
+<span class="c1"># Select key 3</span>
+gpg&gt; key <span class="m">3</span>
+
+gpg&gt; keytocard
+Please <span class="k">select</span> where to store the key:
+   <span class="o">(</span>3<span class="o">)</span> Authentication key
+Your selection? <span class="m">3</span>
+
+<span class="c1"># The save</span>
+gpg&gt; save
+</code></pre></div><p>Check the status of the nitrokey in another terminal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">❯ gpg --card-status
+
+Reader ...........: 20A0:4108:0000000000000000000<span class="o">(</span>...<span class="o">)</span>16:0
+Application ID ...: D2760001240103030005000<span class="o">(</span>...<span class="o">)</span><span class="m">160000</span>
+Application <span class="nb">type</span> .: OpenPGP
+Version ..........: 3.3
+Manufacturer .....: ZeitControl
+Serial number ....: 000<span class="o">(</span>...<span class="o">)</span><span class="m">16</span>
+Name of cardholder: Grenier Baptiste
+Language prefs ...: fr
+Salutation .......: Mr.
+URL of public key : https://keys.bapt.name/pubkey.asc
+Login data .......: <span class="o">[</span>not set<span class="o">]</span>
+Signature PIN ....: forced
+Key attributes ...: rsa4096 rsa4096 rsa4096
+Max. PIN lengths .: <span class="m">64</span> <span class="m">64</span> <span class="m">64</span>
+PIN retry counter : <span class="m">3</span> <span class="m">0</span> <span class="m">3</span>
+Signature counter : <span class="m">0</span>
+KDF setting ......: off
+Signature key ....: 3FE2 DB50 <span class="m">7172</span> <span class="m">1518</span> <span class="o">(</span>...<span class="o">)</span> 01CE BA44
+      created ....: 2020-07-09 16:38:47
+Encryption key....: F367 BA47 CDED 90F8 <span class="o">(</span>...<span class="o">)</span> C211 AC0D
+      created ....: 2020-07-09 16:37:12
+Authentication key: 9E4A <span class="m">0477</span> 6B6D <span class="m">3636</span> <span class="o">(</span>...<span class="o">)</span> 5EF0 57E3
+      created ....: 2020-07-09 16:39:14
+General key info..: sub  rsa4096/XXXXXXXXXXXXXXXX 2020-07-09 Baptiste Grenier &lt;baptiste@bapt.name&gt;
+sec   rsa4096/XXXXXXXXXXXXXXXX  created: 2019-04-19  expires: never
+ssb&gt;  rsa4096/XXXXXXXXXXXXXXXX  created: 2020-07-09  expires: never
+                                card-no: <span class="m">0005</span> 000<span class="o">(</span>...<span class="o">)</span><span class="m">16</span>
+ssb&gt;  rsa4096/XXXXXXXXXXXXXXXX  created: 2020-07-09  expires: never
+                                card-no: <span class="m">0005</span> 000<span class="o">(</span>...<span class="o">)</span><span class="m">16</span>
+ssb&gt;  rsa4096/XXXXXXXXXXXXXXXX  created: 2020-07-09  expires: never
+                                card-no: <span class="m">0005</span> 000<span class="o">(</span>...<span class="o">)</span><span class="m">16</span>
+</code></pre></div><h4 id="usage-with-neomutt">Usage with neomutt</h4>
+<p>TBD</p>
+<h3 id="usage-on-macos-x">Usage on MacOS X</h3>
+<h3 id="usage-on-windows-10">Usage on Windows 10</h3>
+<h2 id="2-factor-authentication-with-the-fido-u2f">2 Factor authentication with the FIDO U2F</h2>
+<h3 id="bitwarden">BitWarden</h3>
+<p>Using 2FA with BitWarden is quite straightforward as it&rsquo;s documented <a href="https://bitwarden.com/help/article/setup-two-step-login-u2f/">in the
+official BitWarden
+documentation</a>.
+Basically the Nitrokey FIDO2 key can be registered to your account, and will
+only have to be connected.</p>
+<p>As always it&rsquo;s always better to always keep mutliple possibilities for doing
+second factor authentication, like a One Time Password (OTP) generated by an
+authentification application such as Authy or Google Authenticator.</p>
+<h3 id="github">GitHub</h3>
+<p>GitHub also provides some <a href="https://docs.github.com/en/github/authenticating-to-github/configuring-two-factor-authentication#configuring-two-factor-authentication-using-a-security-key">official documentation on using a security key for two-factor authentication</a>.</p>
+<h2 id="documnentation">Documnentation</h2>
+<ul>
+<li><a href="https://www.nitrokey.com">Nitrokey</a></li>
+<li><a href="https://www.nitrokey.com/documentation/installation">Nitrokey documentation</a></li>
+<li><a href="">FIDO2</a></li>
+<li><a href="">U2F</a></li>
+<li><a href="https://www.igtf.net/">IGTF</a></li>
+<li><a href="https://raymii.org/s/articles/Nitrokey_Start_Getting_started_guide.html">Nitokey + GPG usage by Raymii</a></li>
+<li><a href="https://xieme-art.org/post/importer-des-clefs-gnupg-dans-sa-nitrokey-pro/">Nitorkey +GPG usage in French by ephase</a></li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>SQM QoS OpenWrt OpenMPTCProuter</title>
+			<link>https://blog.bapt.name/2020/05/20/sqm-qos-openwrt-openmptcprouter/</link>
+			<pubDate>Wed, 20 May 2020 12:50:27 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/05/20/sqm-qos-openwrt-openmptcprouter/</guid>
+			<description>Doing QoS with OpenMPTCProuter I&amp;rsquo;m at the countryside so no fiber/FTTH but only FTTD (Fiber To The DSLAM)&amp;hellip; Being a remote worker I need a quite stable connection, so I&amp;rsquo;m currently using 3 ADSL connections aggregated via OpenMPTCProuter. Thus not only if one link fail it will be transparent but the upload and download links are aggregated, it&amp;rsquo;s not only a failover on the links. Initially I was an OverTheBox user, but that&amp;rsquo;s another story&amp;hellip;</description>
+			<content type="html"><![CDATA[<h1 id="doing-qos-with-openmptcprouter">Doing QoS with OpenMPTCProuter</h1>
+<p>I&rsquo;m at the countryside so no fiber/FTTH but only FTTD (Fiber To The DSLAM)&hellip;
+Being a remote worker I need a quite stable connection, so I&rsquo;m currently using
+3 ADSL connections aggregated via OpenMPTCProuter. Thus not only if one link
+fail it will be transparent but the upload and download links are aggregated,
+it&rsquo;s not only a failover on the links.
+Initially I was an <a href="">OverTheBox</a> user, but that&rsquo;s <a href="https://community.ovh.com/t/inutilisable-depuis-plusieurs-jours-bye-bye-overthebox-welcome-openmptcprouter/11844">another story</a>&hellip;</p>
+<p><a href="https://www.openmptcprouter.com/">OpenMPTCProuter</a> is based on
+<a href="https://openwrt.org">OpenWrt</a> and includes Smart Queue Management (SQM)
+allowing to do traffic shaping.
+Due to this it&rsquo;s possible to use the standard <a href="https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm">SQM
+documentation</a>,
+basically it involves:</p>
+<ul>
+<li>measuring the current speed of the setup</li>
+<li>computing the download and upload caps</li>
+<li>configuring SQM appropriately</li>
+</ul>
+<h2 id="measuring-the-current-speed-of-the-setup">Measuring the current speed of the setup</h2>
+<p>Various convenient online services are available to test your connection.
+I&rsquo;m using <a href="https://nperf.com">https://nperf.com</a> with a free registered account as they provide an
+history of the checks, so it&rsquo;s quite convenient.</p>
+<p>Be sure to do multiple test to have a propre idea of the speed.</p>
+<p>With my 3 ADSL connections I measured:</p>
+<ul>
+<li>average download around 33/34 megabits/s</li>
+<li>average upload around 1.5/1.7 megabits/s</li>
+<li>average ping around 27/33 ms</li>
+</ul>
+<p>My ADSL connections are around 10-12 Mb each, so it&rsquo;s coherent.</p>
+<h3 id="measuring-speed-from-the-cli">Measuring speed from the CLI</h3>
+<p>In order to measure the download time you could also just download some files
+from the CLI and see the speed, OVH provides some <a href="http://proof.ovh.net/files/">convenient
+files</a> for this.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wget -O /dev/null http://proof.ovh.net/files/10Mb.dat
+</code></pre></div><p>For the upload it&rsquo;s not as easy as you will need service listening on the
+internet, <code>nc</code> can be used for this.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># On the remote server, be sure to have port 4444 open</span>
+ nc -v -l <span class="m">4242</span> &gt; /dev/null
+<span class="c1"># From a local computer</span>
+dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">bs</span><span class="o">=</span>1024K <span class="nv">count</span><span class="o">=</span><span class="m">512</span> <span class="p">|</span> nc -v <span class="nv">$SERVER_IP</span> <span class="m">4242</span>
+<span class="c1"># Then you will be able to check dd&#39;s output</span>
+</code></pre></div><h2 id="computing-the-download-and-upload-caps">Computing the download and upload caps</h2>
+<p>For the download and upload caps <a href="https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm">SQM
+Documentation</a>
+recommends using a max value between 80 and 95 % of the measured value.</p>
+<p>To be a bit conservative I selected 85%:</p>
+<ul>
+<li>33000 * 0.85 = 28050</li>
+<li>1.600 * 0.85 = 1360</li>
+</ul>
+<h2 id="configuring-sqm-in-openmptcprouter">Configuring SQM in OpenMPTCProuter</h2>
+<p>Assuming OpenMPTCProuter will be reachable at 192.168.100.1, the configuration
+should be done at S http://192.168.100.1/cgi-bin/luci/admin/network/sqm (so
+under Network-&gt;SQM QoS).</p>
+<p>As I want to do QoS on the aggregated MPTCP link it&rsquo;s on the tun0 (omrvpn)
+interface, be sure to configure SQM for this specific interface.</p>
+<p>In the <code>Basic Settings</code> tab:</p>
+<ul>
+<li>Ensure that this SQM instance is enabled</li>
+<li>Download speed: 28050</li>
+<li>Upload speed: 1360</li>
+</ul>
+<p>In the <code>Queue Discipline</code> tab:</p>
+<ul>
+<li>Queuing disciplines usable: cake</li>
+<li>Queue setup script: piece_of_cake.qos</li>
+</ul>
+<p>In the <code>Link Layer Adapation</code> tab:</p>
+<ul>
+<li>Which link layer to account for: ATM (as I&rsquo;m using 3 ADSL connections)</li>
+<li>Per packet Overhead: 44</li>
+</ul>
+<p>Then save an apply!</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Arpspoof Arp Cache Poisoning</title>
+			<link>https://blog.bapt.name/2020/05/02/arpspoof-arp-cache-poisoning/</link>
+			<pubDate>Sat, 02 May 2020 18:19:48 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/05/02/arpspoof-arp-cache-poisoning/</guid>
+			<description>Goal: tricking arp cache to redirect network traffic to us &amp;ldquo;Man in the middle&amp;rdquo;.
+ VM1: 192.168.1.244 VM2: 192.168.1.145 GW: 192.168.1.1  Prerequisites # Enable ip forwarding sudo sh -c &amp;#39;echo 1 &amp;gt; /proc/sys/net/ipv4/ip_forward&amp;#39; # Install arpspoof (part of dsniff) sudo apt install dsniff Listening to traffic between two VMs # Checking arp table on VM1/VM2 allow to check IP/Mac arp -a # Start redirecting traffic from VM1 to VM2 to us sudo arpspoof -i eth0 -t $VM1 $VM2 # Start redirecting traffic from VM2 to VM1 to us sudo arpspoof -i eth0 -t $VM2 $VM1 # Checking arp table on VM1/VM2 allow to check IP/Mac arp -a # Using wireshark will allow to check/follow traffic sudo whireshark Pretending to be the default gateway # Checking arp table allow to check IP/Mac arp -a # Start redirecting traffic from VM1 to VM2 to us sudo arpspoof -i eth0 -t $VM1 $GW # Start redirecting traffic from VM2 to VM1 to us sudo arpspoof -i eth0 -t $GW $VM1 # Using wireshark will allow to check/follow traffic sudo whireshark </description>
+			<content type="html"><![CDATA[<p>Goal: tricking <code>arp</code> cache to redirect network traffic to us &ldquo;Man in the middle&rdquo;.</p>
+<ul>
+<li>VM1: 192.168.1.244</li>
+<li>VM2: 192.168.1.145</li>
+<li>GW: 192.168.1.1</li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Enable ip forwarding</span>
+sudo sh -c <span class="s1">&#39;echo 1 &gt; /proc/sys/net/ipv4/ip_forward&#39;</span>
+<span class="c1"># Install arpspoof (part of dsniff)</span>
+sudo apt install dsniff
+</code></pre></div><h2 id="listening-to-traffic-between-two-vms">Listening to traffic between two VMs</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Checking arp table on VM1/VM2 allow to check IP/Mac</span>
+arp -a
+<span class="c1"># Start redirecting traffic from VM1 to VM2 to us</span>
+sudo arpspoof -i eth0 -t <span class="nv">$VM1</span> <span class="nv">$VM2</span>
+<span class="c1"># Start redirecting traffic from VM2 to VM1 to us</span>
+sudo arpspoof -i eth0 -t <span class="nv">$VM2</span> <span class="nv">$VM1</span>
+<span class="c1"># Checking arp table on VM1/VM2 allow to check IP/Mac</span>
+arp -a
+<span class="c1"># Using wireshark will allow to check/follow traffic</span>
+sudo whireshark
+</code></pre></div><h2 id="pretending-to-be-the-default-gateway">Pretending to be the default gateway</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Checking arp table allow to check IP/Mac</span>
+arp -a
+<span class="c1"># Start redirecting traffic from VM1 to VM2 to us</span>
+sudo arpspoof -i eth0 -t <span class="nv">$VM1</span> <span class="nv">$GW</span>
+<span class="c1"># Start redirecting traffic from VM2 to VM1 to us</span>
+sudo arpspoof -i eth0 -t <span class="nv">$GW</span> <span class="nv">$VM1</span>
+<span class="c1"># Using wireshark will allow to check/follow traffic</span>
+sudo whireshark
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>Archlinux cleaning installed packages groups with Pacman</title>
+			<link>https://blog.bapt.name/2020/05/01/archlinux-cleaning-installed-packages-groups-with-pacman/</link>
+			<pubDate>Fri, 01 May 2020 10:37:52 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/05/01/archlinux-cleaning-installed-packages-groups-with-pacman/</guid>
+			<description>On Archlinux pacman allows to install packages as a group. Cleaning those packages and their dependencies is not as straight forward, but it possible to do cleaning by using a few commands.
+Here let&amp;rsquo;s try to clean plasma stuff (finally I find gnome more straightforward to used, despite being sometimes a bit surprised by the lack of customisation or by some choices.)
+# Check installed packages from groups pacman -Qg # Collect installed list of packages for specific groups pacman -Qgq plasma &amp;gt; plasma.</description>
+			<content type="html"><![CDATA[<p>On <a href="https://archlinux.org">Archlinux</a>
+<a href="https://wiki.archlinux.org/index.php/Pacman">pacman</a> allows to install
+packages as a group.
+Cleaning those packages and their dependencies is not as straight forward, but
+it possible to do cleaning by using a few commands.</p>
+<p>Here let&rsquo;s try to clean plasma stuff (finally I find gnome more straightforward
+to used, despite being sometimes a bit surprised by the lack of customisation
+or by some choices.)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Check installed packages from groups</span>
+pacman -Qg
+<span class="c1"># Collect installed list of packages for specific groups</span>
+pacman -Qgq plasma &gt; plasma.txt
+pacman -Qgq qt &gt;&gt; plasma.txt
+pacman -Qgq qt5 &gt;&gt; plasma.txt
+pacman -Qgq kf5 &gt;&gt; plasma.txt
+pacman -Qgq kf5-aids &gt;&gt; plasma.txt
+pacman -Qgq kde-applications &gt;&gt; plasma.txt
+<span class="c1"># Clean list of package if needed</span>
+vim plasma.txt
+<span class="c1"># Delete the packages and the ones that requires them</span>
+<span class="c1"># XXX double check what is/will be deleted an reinstall what as needed</span>
+sudo pacman -Rc - &lt; plasma.txt
+<span class="c1"># Reinstall what is still being used</span>
+sudo pacman -S nextcloud-client vlc virtualbox qgpgme
+</code></pre></div><p>Side note: I&rsquo;m usually using <a href="https://github.com/trizen/trizen">trizen</a> to
+manage packages and AUR at once.</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Copy Paste With Vim and Tmux</title>
+			<link>https://blog.bapt.name/2020/04/28/copy-paste-with-vim-and-tmux/</link>
+			<pubDate>Tue, 28 Apr 2020 11:07:46 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/04/28/copy-paste-with-vim-and-tmux/</guid>
+			<description>Copying between two VIM sessions Using vim + clipboard copy to just get vim content and not all the VIM formatting (line numbers and so on).
+  On MacOS X + and * registers are the same.
+  On GNU/Linux
+ + is the desktop clipboard (usable via ctl-c/x/v) * is the X11 primary selection (usable via mouse selection/middle mouse button)    Select text in VIM</description>
+			<content type="html"><![CDATA[<h2 id="copying-between-two-vim-sessions">Copying between two VIM sessions</h2>
+<p>Using vim + clipboard copy to just get vim content and not all the VIM
+formatting (line numbers and so on).</p>
+<ul>
+<li>
+<p>On MacOS X <code>+</code> and <code>*</code> registers are the same.</p>
+</li>
+<li>
+<p>On GNU/Linux</p>
+<ul>
+<li><code>+</code> is the desktop clipboard (usable via ctl-c/x/v)</li>
+<li><code>*</code> is the X11 primary selection (usable via mouse selection/middle mouse button)</li>
+</ul>
+</li>
+<li>
+<p>Select text in VIM</p>
+</li>
+<li>
+<p>Copy to the * register (system clipboard) <code>&quot;*y</code></p>
+</li>
+<li>
+<p>Paste the clipboard in new vim session <code>&quot;*p</code></p>
+</li>
+</ul>
+<h2 id="copying-using-tmux">Copying using TMUX</h2>
+<ul>
+<li>
+<p><a href="https://github.com/tmux-plugins/tmux-copycat">https://github.com/tmux-plugins/tmux-copycat</a></p>
+</li>
+<li>
+<p><a href="https://github.com/tmux-plugins/tmux-yank">https://github.com/tmux-plugins/tmux-yank</a></p>
+</li>
+<li>
+<p><a href="https://vim.fandom.com/wiki/Accessing_the_system_clipboard">https://vim.fandom.com/wiki/Accessing_the_system_clipboard</a></p>
+</li>
+<li>
+<p>Selecting content in tmux:</p>
+<ul>
+<li>Enter tmux pane history &ldquo;navigation&rdquo; mode: <code>ctrl-b+[</code></li>
+<li>Use arrows or <code>h/j/k/l</code> to go to where you need</li>
+<li>Use <code>V</code> to move in line selection mode</li>
+<li>Use <code>y</code> to copy (yank) to system clipboard</li>
+</ul>
+</li>
+<li>
+<p>Pasting using tmux</p>
+<ul>
+<li><code>ctrl-b + ]</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="copying-from-tmux-to-vim">Copying from TMUX to VIM</h2>
+<ul>
+<li>Selecting content in tmux:
+<ul>
+<li>Enter tmux pane history &ldquo;navigation&rdquo; mode: <code>ctrl-b+[</code></li>
+<li>Use arrows or <code>h/j/k/l</code> to go to where you need</li>
+<li>Use <code>V</code> to move in line selection mode</li>
+<li>Use <code>y</code> to copy (yank) to system clipboard</li>
+</ul>
+</li>
+<li>Pasting using tmux
+<ul>
+<li><code>ctrl-b + ]</code></li>
+</ul>
+</li>
+<li>Or pasting in vim
+<ul>
+<li>Paste content from system clipboard (aka <code>+</code>): <code>&quot;+p</code></li>
+</ul>
+</li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Terminal setup ZSH tmux powerlevel10k</title>
+			<link>https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/</link>
+			<pubDate>Sat, 25 Apr 2020 17:51:44 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/</guid>
+			<description>Today I was contacted by a person asking for my terminal setup, after having seen it in a GitHub issue.
+So even if most of my conf is already available in my dotfiles let&amp;rsquo;s share it here too in a more documented way, maybe someone may be interested by this too.
+Obviously it&amp;rsquo;s for ZSH not bash. :P
+Please also be waned that my dotfiles are a work in progress and quite messy/broken, some stuff are also quite obsolete.</description>
+			<content type="html"><![CDATA[<p>Today I was contacted by a person asking for my terminal setup, after having
+seen it in <a href="https://github.com/aristocratos/bashtop/issues/25">a GitHub issue</a>.</p>
+<p>So even if most of my conf is already available in my
+<a href="https://github.com/gwarf/dotfiles">dotfiles</a> let&rsquo;s share it here too in a more
+documented way, maybe someone may be interested by this too.</p>
+<p>Obviously it&rsquo;s for ZSH not bash. :P</p>
+<p>Please also be waned that my dotfiles are a work in progress and quite
+messy/broken, some stuff are also quite obsolete.</p>
+<p>So what was shown was my MacOS X setup, using iterm2 with the <a href="https://www.nordtheme.com/">nord theme</a>, ZSH and
+true colors:</p>
+<p><img src="/blog/iterm2-powerlevel10k.png" alt="Screenshot 2020-04-24 at 15 37 34"></p>
+<h2 id="terminal-iterm2-or-gnome-terminal-with-hack-nerd-font">Terminal: iTerm2 or gnome-terminal with Hack Nerd font</h2>
+<ul>
+<li>The MacOS X terminal is iTerm2: <a href="https://iterm2.com/">https://iterm2.com/</a></li>
+<li>The iTerm2 theme is Nord: <a href="https://github.com/arcticicestudio/nord-iterm2">https://github.com/arcticicestudio/nord-iterm2</a></li>
+<li>The font is Hack Nerd: <a href="https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/Hack">https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/Hack</a></li>
+</ul>
+<p>On GNU/Linux I&rsquo;m using gnome-terminal instead of iTerm2, there is also a Nord
+theme for it: <a href="https://github.com/arcticicestudio/nord-gnome-terminal">https://github.com/arcticicestudio/nord-gnome-terminal</a></p>
+<h2 id="shell-zsh-with-zplug-and-powerlevel10k">Shell: ZSH with zplug and powerlevel10k</h2>
+<p>The shell is Zsh and I&rsquo;m using Zplug to manage my ZSH conf: <a href="https://github.com/zplug/zplug">https://github.com/zplug/zplug</a>.</p>
+<p>The ZSH theme is powerlevel10k: <a href="https://github.com/romkatv/powerlevel10k">https://github.com/romkatv/powerlevel10k</a>
+Powerlevel10k will launch a wizard to help you configuring it, my
+configuration file (you can see the options I selected at the top) is:
+<a href="https://github.com/gwarf/dotfiles/blob/master/p10k.zsh">https://github.com/gwarf/dotfiles/blob/master/p10k.zsh</a></p>
+<p>And my current ZSH conf is
+<a href="https://github.com/gwarf/dotfiles/blob/master/zsh/zsh-zplug-mac">https://github.com/gwarf/dotfiles/blob/master/zsh/zsh-zplug-mac</a></p>
+<h2 id="terminal-multiplexer-tmux-with-tmux-nord-and-tpm">Terminal multiplexer: tmux with tmux-nord and tpm</h2>
+<p>I&rsquo;m also using tmux <a href="https://github.com/tmux/tmux/">https://github.com/tmux/tmux/</a> with a Nord theme:
+<a href="https://github.com/arcticicestudio/nord-tmux">https://github.com/arcticicestudio/nord-tmux</a></p>
+<p>My tmux plugins are configured via tpm: <a href="https://github.com/tmux-plugins/tpm">https://github.com/tmux-plugins/tpm</a>
+My tmux conf is: <a href="https://github.com/gwarf/dotfiles/blob/master/tmux.conf">https://github.com/gwarf/dotfiles/blob/master/tmux.conf</a></p>
+<h2 id="text-editor-neovim-with-vim-plug-nord-theme-and-too-many-things">Text editor: neovim with vim-plug, nord theme and too many things</h2>
+<ul>
+<li>My beloved text editor is neovim: <a href="https://neovim.io/">https://neovim.io/</a></li>
+<li>I&rsquo;m using the vim Nord theme: <a href="https://github.com/arcticicestudio/nord-vim">https://github.com/arcticicestudio/nord-vim</a></li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Monitoring with Sensu</title>
+			<link>https://blog.bapt.name/2020/04/25/monitoring-with-sensu/</link>
+			<pubDate>Sat, 25 Apr 2020 15:56:13 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/04/25/monitoring-with-sensu/</guid>
+			<description>Some notes taken during a deployment of Sensu with one backend server and some nodes running agents.
+Installing Sensu Follow the official documentation.
+Installing the backend # Add the Sensu repository curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash # Install the sensu-go-backend package sudo yum install sensu-go-backend # Copy the config template from the docs sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml # Start sensu-backend sudo systemctl enable --now sensu-backend # Initialise sudo systemctl status -l sensu-backend export SENSU_BACKEND_CLUSTER_ADMIN_USERNAME=YOUR_USERNAME export SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD=YOUR_PASSWORD sensu-backend init # Check that backend replies curl http://127.</description>
+			<content type="html"><![CDATA[<p>Some notes taken during a deployment of Sensu with one backend server and some
+nodes running agents.</p>
+<h2 id="installing-sensu">Installing Sensu</h2>
+<p>Follow the <a href="https://docs.sensu.io/sensu-go/latest/installation/install-sensu/">official documentation</a>.</p>
+<h3 id="installing-the-backend">Installing the backend</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Add the Sensu repository</span>
+curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh <span class="p">|</span> sudo bash
+<span class="c1"># Install the sensu-go-backend package</span>
+sudo yum install sensu-go-backend
+<span class="c1"># Copy the config template from the docs</span>
+sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml
+<span class="c1"># Start sensu-backend</span>
+sudo systemctl <span class="nb">enable</span> --now sensu-backend
+<span class="c1"># Initialise</span>
+sudo systemctl status -l sensu-backend
+<span class="nb">export</span> <span class="nv">SENSU_BACKEND_CLUSTER_ADMIN_USERNAME</span><span class="o">=</span>YOUR_USERNAME
+<span class="nb">export</span> <span class="nv">SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD</span><span class="o">=</span>YOUR_PASSWORD
+sensu-backend init
+<span class="c1"># Check that backend replies</span>
+curl http://127.0.0.1:8080/health
+</code></pre></div><h3 id="installing-the-client">Installing the client</h3>
+<p>The client is used to interact with the backend from CLI using <code>sensuctl</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Add the Sensu repository</span>
+curl https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh <span class="p">|</span> sudo bash
+<span class="c1"># Install the sensu-go-cli package</span>
+sudo yum install sensu-go-cli
+sensuctl configure -n <span class="se">\
+</span><span class="se"></span>--username <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_USERNAME</span> <span class="se">\
+</span><span class="se"></span>--password <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD</span> <span class="se">\
+</span><span class="se"></span>--namespace default <span class="se">\
+</span><span class="se"></span>--url <span class="s1">&#39;http://127.0.0.1:8080&#39;</span>
+sensuctl config view
+</code></pre></div><h3 id="configure-ca-and-certificates">Configure CA and certificates</h3>
+<p>Follow the <a href="https://docs.sensu.io/sensu-go/latest/guides/generate-certificates/">official documentation</a>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Download cfssl and cfssljson executables and install them in /usr/local/bin:</span>
+sudo curl -L https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64 -o /usr/local/bin/cfssl
+sudo curl -L https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64 -o /usr/local/bin/cfssljson
+sudo chmod +x /usr/local/bin/cfssl*
+<span class="c1"># Create /etc/sensu/tls -- does not exist by default</span>
+sudo su -
+mkdir -p /etc/sensu/tls
+<span class="nb">cd</span> /etc/sensu/tls
+<span class="c1"># Create the Certificate Authority</span>
+<span class="nb">echo</span> <span class="s1">&#39;{&#34;CN&#34;:&#34;Sensu Test CA&#34;,&#34;key&#34;:{&#34;algo&#34;:&#34;rsa&#34;,&#34;size&#34;:2048}}&#39;</span> <span class="p">|</span> cfssl gencert -initca - <span class="p">|</span> cfssljson -bare ca -
+<span class="c1"># Define signing parameters and profiles. Note that agent profile provides the &#34;client auth&#34; usage required for mTLS.</span>
+<span class="nb">echo</span> <span class="s1">&#39;{&#34;signing&#34;:{&#34;default&#34;:{&#34;expiry&#34;:&#34;17520h&#34;,&#34;usages&#34;:[&#34;signing&#34;,&#34;key encipherment&#34;,&#34;client auth&#34;]},&#34;profiles&#34;:{&#34;backend&#34;:{&#34;usages&#34;:[&#34;signing&#34;,&#34;key encipherment&#34;,&#34;server auth&#34;],&#34;expiry&#34;:&#34;4320h&#34;},&#34;agent&#34;:{&#34;usages&#34;:[&#34;signing&#34;,&#34;key encipherment&#34;,&#34;client auth&#34;],&#34;expiry&#34;:&#34;4320h&#34;}}}}&#39;</span> &gt; ca-config.json
+<span class="c1"># Issue backend certificate</span>
+<span class="nb">export</span> <span class="nv">ADDRESS</span><span class="o">=</span>localhost,127.0.0.1,<span class="nv">$BACKEND_IP</span>,<span class="nv">$BACKEND_FQDN</span>
+<span class="nb">export</span> <span class="nv">NAME</span><span class="o">=</span><span class="nv">$BACKEND_FQDN</span>
+<span class="nb">echo</span> <span class="s1">&#39;{&#34;CN&#34;:&#34;&#39;</span><span class="nv">$NAME</span><span class="s1">&#39;&#34;,&#34;hosts&#34;:[&#34;&#34;],&#34;key&#34;:{&#34;algo&#34;:&#34;rsa&#34;,&#34;size&#34;:2048}}&#39;</span> <span class="p">|</span> cfssl gencert -config<span class="o">=</span>ca-config.json -profile<span class="o">=</span><span class="s2">&#34;backend&#34;</span> -ca<span class="o">=</span>ca.pem -ca-key<span class="o">=</span>ca-key.pem -hostname<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$ADDRESS</span><span class="s2">&#34;</span> - <span class="p">|</span> cfssljson -bare <span class="nv">$NAME</span>
+<span class="c1"># Issue agents&#39; certificates</span>
+<span class="nb">export</span> <span class="nv">NAME</span><span class="o">=</span><span class="nv">$AGENT_NAME</span>
+<span class="nb">echo</span> <span class="s1">&#39;{&#34;CN&#34;:&#34;&#39;</span><span class="nv">$NAME</span><span class="s1">&#39;&#34;,&#34;hosts&#34;:[&#34;&#34;],&#34;key&#34;:{&#34;algo&#34;:&#34;rsa&#34;,&#34;size&#34;:2048}}&#39;</span> <span class="p">|</span> cfssl gencert -config<span class="o">=</span>ca-config.json -ca<span class="o">=</span>ca.pem -ca-key<span class="o">=</span>ca-key.pem -hostname<span class="o">=</span><span class="s2">&#34;&#34;</span> -profile<span class="o">=</span>agent - <span class="p">|</span> cfssljson -bare <span class="nv">$NAME</span>
+chown sensu /etc/sensu/tls/*.pem
+chmod <span class="m">400</span> /etc/sensu/tls/*.pem
+chown root /etc/sensu/tls/ca.pem
+chmod <span class="m">644</span> /etc/sensu/tls/ca.pem
+</code></pre></div><ul>
+<li>Copy agent&rsquo;s certificate and key to <code>/etc/sensu/tls</code> on each agent nodes.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Configuration for mail node</span>
+tree /etc/sensu
+/etc/sensu
+├── agent.yml
+└── tls
+    ├── ca.pem
+    ├── mail-key.pem
+    └── mail.pem
+
+<span class="m">1</span> directory, <span class="m">4</span> files
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Add Sensu CA to system trust store</span>
+<span class="c1"># CentOS</span>
+chmod <span class="m">644</span> /etc/sensu/tls/ca.pem
+chown root /etc/sensu/tls/ca.pem
+sudo yum install -y ca-certificates
+sudo update-ca-trust force-enable
+sudo ln -s /etc/sensu/tls/ca.pem /etc/pki/ca-trust/source/anchors/sensu-ca.pem
+sudo update-ca-trust
+<span class="c1"># Ubuntu</span>
+chmod <span class="m">644</span> /etc/sensu/tls/ca.pem
+chown root /etc/sensu/tls/ca.pem
+sudo apt-get install ca-certificates -y
+sudo ln -sfv /etc/sensu/tls/ca.pem /usr/local/share/ca-certificates/sensu-ca.crt
+sudo update-ca-certificates
+<span class="c1"># Arch</span>
+sudo trust anchor --store /etc/sensu/tls/ca.pem
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">➜  ~ sudo grep -v <span class="s1">&#39;^\(#.*\|\s*\)$&#39;</span> /etc/sensu/backend.yml
+---
+state-dir: <span class="s2">&#34;/var/lib/sensu/sensu-backend&#34;</span>
+log-level: <span class="s2">&#34;debug&#34;</span> <span class="c1"># available log levels: panic, fatal, error, warn, info, debug</span>
+api-url: <span class="s2">&#34;https://localhost:8080&#34;</span>
+dashboard-cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+dashboard-key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+dashboard-host: <span class="s2">&#34;[::]&#34;</span> <span class="c1"># listen on all IPv4 and IPv6 addresses</span>
+dashboard-port: <span class="m">3000</span>
+cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+insecure-skip-tls-verify: <span class="nb">false</span>
+etcd-advertise-client-urls: <span class="s2">&#34;https://localhost:2379&#34;</span>
+etcd-listen-client-urls: <span class="s2">&#34;https://localhost:2379&#34;</span>
+etcd-listen-peer-urls: <span class="s2">&#34;https://localhost:2380&#34;</span>
+etcd-initial-advertise-peer-urls: <span class="s2">&#34;https://localhost:2380&#34;</span>
+etcd-cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+etcd-key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+etcd-trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+etcd-peer-cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+etcd-peer-key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+etcd-peer-client-cert-auth: <span class="s2">&#34;true&#34;</span>
+etcd-peer-trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Restart backend</span>
+sudo systemctl restart sensu-backend
+<span class="c1"># Update sensuctl to use https</span>
+sensuctl configure -n <span class="se">\
+</span><span class="se"></span>--username <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_USERNAME</span> <span class="se">\
+</span><span class="se"></span>--password <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD</span> <span class="se">\
+</span><span class="se"></span>--namespace default <span class="se">\
+</span><span class="se"></span>--url <span class="s1">&#39;http://127.0.0.1:8080&#39;</span>
+</code></pre></div><h3 id="allowing-client-and-agents-to-connect-to-the-backend">Allowing client and agents to connect to the backend</h3>
+<p><code>$CLIENT_IP</code> is the IP of the host accessing the Web interface.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Allowing to access the sensu dashboard running on port 3000</span>
+sudo ufw allow from <span class="nv">$CLIENT_IP</span> to any port <span class="m">3000</span>
+<span class="c1"># Allowing an agent to connect to the Sensu backend</span>
+sudo ufw allow from <span class="nv">$AGENT_IP</span> to any port <span class="m">8081</span>
+</code></pre></div><p>The sensu web interface is available on <code>https://$BACKEND_FQDN:3000</code>.</p>
+<h3 id="installing-and-configuring-agents">Installing and configuring agents</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Add the Sensu repository</span>
+curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh <span class="p">|</span> sudo bash
+<span class="c1"># Install the sensu-go-agent package</span>
+sudo yum install sensu-go-agent
+<span class="c1"># Copy the config template from the docs</span>
+sudo curl -L https://docs.sensu.io/sensu-go/latest/files/agent.yml -o /etc/sensu/agent.yml
+<span class="c1"># Start sensu-agent using a service manager</span>
+sudo systemctl <span class="nb">enable</span> --now sensu-agent
+sudo systemctl status -l sensu-agent
+</code></pre></div><h4 id="edit-configuration">Edit configuration</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">grep -v <span class="s1">&#39;^\(#.*\|\s*\)$&#39;</span> /etc/sensu/agent.yml
+---
+backend-url:
+  - <span class="s2">&#34;wss://</span><span class="nv">$BACKEND_IP</span><span class="s2">:8081&#34;</span>
+log-level: <span class="s2">&#34;debug&#34;</span>
+trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+subscriptions:
+  - system
+  <span class="c1"># On the host testing the remote mail server</span>
+  - mailcow
+</code></pre></div><h4 id="check-agents-listed-in-the-backend">Check agents listed in the backend</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Checking agent&#39;s heartbeats</span>
+sensuctl entity list
+</code></pre></div><h2 id="monitoring-with-sensu">Monitoring with Sensu</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># Installing plugins</span>
+sensuctl asset add sensu-plugins/sensu-plugins-cpu-checks -r cpu-checks-plugins
+sensuctl asset add sensu/sensu-ruby-runtime -r sensu-ruby-runtime
+sensuctl asset add sensu/sensu-email-handler -r email-handler
+sensuctl asset add sensu/monitoring-plugins
+sensuctl asset add dhpowrhost/sensu-plugins-imap
+<span class="c1"># Add a mail handler</span>
+cat <span class="s">&lt;&lt; EOF | sensuctl create
+</span><span class="s">---
+</span><span class="s">api_version: core/v2
+</span><span class="s">type: Handler
+</span><span class="s">metadata:
+</span><span class="s">  namespace: default
+</span><span class="s">  name: email
+</span><span class="s">spec:
+</span><span class="s">  type: pipe
+</span><span class="s">  command: sensu-email-handler -f $MAIL_FROM -t $MAIL_TO -s $MAIL_SERVER -u $MAIL_USER -p $MAIL_PASS
+</span><span class="s">  timeout: 10
+</span><span class="s">  filters:
+</span><span class="s">  - is_incident
+</span><span class="s">  - not_silenced
+</span><span class="s">  - state_change_only
+</span><span class="s">  runtime_assets:
+</span><span class="s">  - email-handler
+</span><span class="s">EOF</span>
+<span class="c1"># Creating checks</span>
+sensuctl check create check-cpu <span class="se">\
+</span><span class="se"></span>  --command <span class="s1">&#39;check-cpu.rb -w 75 -c 90&#39;</span> <span class="se">\
+</span><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span><span class="se"></span>  --subscriptionssystem <span class="se">\
+</span><span class="se"></span>  --runtime-assets cpu-checks-plugins,sensu-ruby-runtime <span class="se">\
+</span><span class="se"></span>  --handlers email
+sensuctl check create check-disk-usage <span class="se">\
+</span><span class="se"></span>  --command <span class="s2">&#34;check-disk-usage.rb -w 70 -c 90 x debugfs,tracefs,proc,overlay,nsfs -p &#39;(\/var\/lib\/docker|\/snap)&#39;&#34;</span> <span class="se">\
+</span><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span><span class="se"></span>  --subscriptions system <span class="se">\
+</span><span class="se"></span>  --runtime-assets sensu-plugins/sensu-plugins-disk-checks <span class="se">\
+</span><span class="se"></span>  --handlers email
+sensuctl check create check-smtp <span class="se">\
+</span><span class="se"></span>  --command <span class="s1">&#39;check_smtp -H $MAIL_SERVER -p 587 -U $MAIL_USER -P $MAIL_PASS&#39;</span> <span class="se">\
+</span><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span><span class="se"></span>  --subscriptions mailcow <span class="se">\
+</span><span class="se"></span>  --runtime-assets sensu/monitoring-plugins <span class="se">\
+</span><span class="se"></span>  --handlers email
+sensuctl check create check-imap <span class="se">\
+</span><span class="se"></span>  --command <span class="s1">&#39;check-imap.rb -h $MAIL_SERVER -p 993 -u $MAIL_USER -p $MAIL_PASS&#39;</span> <span class="se">\
+</span><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span><span class="se"></span>  --subscriptions mailcow <span class="se">\
+</span><span class="se"></span>  --runtime-assets dhpowrhost/sensu-plugins-imap,sensu-ruby-runtime <span class="se">\
+</span><span class="se"></span>  --handlers email
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>Hacking Cheatsheet</title>
+			<link>https://blog.bapt.name/2020/04/14/hacking-cheatsheet/</link>
+			<pubDate>Tue, 14 Apr 2020 12:51:06 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/04/14/hacking-cheatsheet/</guid>
+			<description>Some notes while doing some CTF.
+Collecting information about an IP  Shodan anti-hacker-alliance.com  Port scan with nmap sudo nmap -sC -sV -oA outputfile $IP Web inventory Searching for webdirectories gobuster dir -u http://oouch.htb:5000/ \  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \  | tee gobuster-directories.txt Searching for domain names gobuster vhost -u http://oouch.htb:5000/ \  -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt \  | tee gobuster-vhosts.txt wfuzz --hh 0 --hc 302 \  -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt \  -H &amp;#39;Host: FUZZ.</description>
+			<content type="html"><![CDATA[<p>Some notes while doing some CTF.</p>
+<h2 id="collecting-information-about-an-ip">Collecting information about an IP</h2>
+<ul>
+<li><a href="https://shodan.io">Shodan</a></li>
+<li><a href="https://anti-hacker-alliance.com">anti-hacker-alliance.com</a></li>
+</ul>
+<h2 id="port-scan-with-nmap">Port scan with nmap</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">sudo nmap -sC -sV -oA outputfile <span class="nv">$IP</span>
+</code></pre></div><h2 id="web-inventory">Web inventory</h2>
+<h3 id="searching-for-webdirectories">Searching for webdirectories</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">gobuster dir -u http://oouch.htb:5000/ <span class="se">\
+</span><span class="se"></span>  -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt <span class="se">\
+</span><span class="se"></span>  <span class="p">|</span> tee gobuster-directories.txt
+</code></pre></div><h3 id="searching-for-domain-names">Searching for domain names</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">gobuster vhost -u http://oouch.htb:5000/ <span class="se">\
+</span><span class="se"></span>  -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt <span class="se">\
+</span><span class="se"></span>  <span class="p">|</span> tee gobuster-vhosts.txt
+wfuzz  --hh <span class="m">0</span> --hc <span class="m">302</span> <span class="se">\
+</span><span class="se"></span>  -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt <span class="se">\
+</span><span class="se"></span>  -H <span class="s1">&#39;Host: FUZZ.oouch.htb&#39;</span> -u http://oouch.htb:5000/
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>Adventures with Pentesting</title>
+			<link>https://blog.bapt.name/2020/04/12/adventures-with-pentesting/</link>
+			<pubDate>Sun, 12 Apr 2020 11:42:34 +0200</pubDate>
+			
+			<guid>https://blog.bapt.name/2020/04/12/adventures-with-pentesting/</guid>
+			<description>Learning by doing with Hack The Box (HTB) During those locked down times I&amp;rsquo;ve been starting to play with Hack The Box, an online platform allowing to do Penetration Testing, using a lab of Virtual Machines designed for this.
+It&amp;rsquo;s some kind of gamified hacking: you have a profile, you earn points and you can level up. At HTB I&amp;rsquo;m gwarf.
+It&amp;rsquo;s a great way of starting to learn pentesting without causing troubles and in a legit environment.</description>
+			<content type="html"><![CDATA[<h2 id="learning-by-doing-with-hack-the-box-htb">Learning by doing with Hack The Box (HTB)</h2>
+<p>During those locked down times I&rsquo;ve been starting to play with <a href="https://hackthebox.eu">Hack The
+Box</a>, an online platform allowing to do Penetration
+Testing, using a lab of Virtual Machines designed for this.</p>
+<p>It&rsquo;s some kind of gamified hacking: you have a profile, you earn points and you
+can level up. At HTB I&rsquo;m <a href="https://www.hackthebox.eu/profile/285350">gwarf</a>.</p>
+<p>It&rsquo;s a great way of starting to learn pentesting without causing troubles and
+in a legit environment.</p>
+<p>It&rsquo;s fun to notice that even registering to the site requires you to find your
+way in (tips: look at the source Luke).</p>
+<p>The goal being to learn it&rsquo;s recommended to progress slowly, and even if
+sometimes it could be required to look for tips, especially at the beginning,
+the most important is to understand what&rsquo;s happening.</p>
+<p>And as with <a href="https://bloodborne.wiki.fextralife.com/">Bloodborne</a> even if you
+can/should look at tips you always feel stronger and enjoy more dopamine when
+you succeed alone.</p>
+<h2 id="starting-with-an-htb-vm">Starting with an HTB VM</h2>
+<ul>
+<li>Boot up your pentest VM (like <a href="https://www.kali.org/">Kali</a>,
+<a href="https://parrotlinux.org/">Parrot</a> or
+<a href="https://www.blackarch.org/">Blackarch</a>)</li>
+<li>Add VM hostname into <code>/etc/hosts</code> (in case the VM comes with a webserver it&rsquo;s
+useful to access it via the IP and the expected VHost)
+<ul>
+<li>On HTB the VM hostname is usually the VM name + htb (like for book: book.htb)</li>
+</ul>
+</li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Rebuilding a package using ABS</title>
+			<link>https://blog.bapt.name/2014/07/29/rebuilding-a-package-using-abs/</link>
+			<pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/07/29/rebuilding-a-package-using-abs/</guid>
+			<description>Rebuilding an Archlinux package using Arch Build System (ABS) Rebuilding a system package on Archlinux as a user is really simple using ABS.
+yaourt -S abs cp /etc/abs.conf ~/.abs.conf sed -i &amp;#39;s#.*ABSROOT.*#ABSROOT=&amp;#34;\$HOME/abs&amp;#34;#&amp;#39; ~/.abs.conf mkdir ~/abs abs extra/nvidia cd ~/abs/extra/nvidia makepkg -s yaourt nvidia*.pkg.tar.xz </description>
+			<content type="html"><![CDATA[<h1 id="rebuilding-an-archlinux-package-using-arch-build-system-abs">Rebuilding an Archlinux package using Arch Build System (ABS)</h1>
+<p>Rebuilding a system package on Archlinux as a user is really simple using
+<a href="https://wiki.archlinux.org/index.php/Arch_Build_System">ABS</a>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">yaourt -S abs
+cp /etc/abs.conf ~/.abs.conf
+sed -i <span class="s1">&#39;s#.*ABSROOT.*#ABSROOT=&#34;\$HOME/abs&#34;#&#39;</span> ~/.abs.conf
+mkdir ~/abs
+abs extra/nvidia
+<span class="nb">cd</span> ~/abs/extra/nvidia
+makepkg -s
+yaourt nvidia*.pkg.tar.xz
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>Grid scripting in python</title>
+			<link>https://blog.bapt.name/2014/07/28/grid-scripting-in-python/</link>
+			<pubDate>Mon, 28 Jul 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/07/28/grid-scripting-in-python/</guid>
+			<description>Scripting Grid management using LCG and LFC python APIs lcg-util Man pages are present in the the lcg-util-devel package.
+man lcg_util_python man lcg_del_python lfc-python Man pages are present in the lfc-python package.
+man lfc_python man lfc2_python Documentation  Gilda Wiki LFC @ Sourcearchive  </description>
+			<content type="html"><![CDATA[<h1 id="scripting-grid-management-using-lcg-and-lfc-python-apis">Scripting Grid management using LCG and LFC python APIs</h1>
+<h2 id="lcg-util">lcg-util</h2>
+<p>Man pages are present in the the lcg-util-devel package.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">man lcg_util_python
+man lcg_del_python
+</code></pre></div><h2 id="lfc-python">lfc-python</h2>
+<p>Man pages are present in the lfc-python package.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">man lfc_python
+man lfc2_python
+</code></pre></div><h2 id="documentation">Documentation</h2>
+<ul>
+<li><a href="http://gilda.ct.infn.it/wikimain">Gilda Wiki</a></li>
+<li><a href="http://lfc.sourcearchive.com/">LFC @ Sourcearchive</a></li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>XenServer installation using HTTP source</title>
+			<link>https://blog.bapt.name/2014/04/18/xenserver-installation-using-http-source/</link>
+			<pubDate>Fri, 18 Apr 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/04/18/xenserver-installation-using-http-source/</guid>
+			<description>Small notes on installing XenServer using a remote installation source. See
+Citrix Official Documentation for more.
+Downloading XenServer Log into Citrix site as login is required in order to see the Product Software entry into the Find Downloads tool.
+Extracting ISO content mkdir xenserver-6.0.0_iso sudo mount -o loop XenServer-6.0.0-install-cd.iso xenserver-6.0.0_iso sudo mkdir -p /srv/mirror/xen/xenserver/6.0.0/ sudo cp -r xenserver-6.0.0_iso/* /srv/mirror/xen/xenserver/6.0.0/ Making ISO available at a reachable http/ftp server Simple alias example for apache:</description>
+			<content type="html"><![CDATA[<p>Small notes on installing XenServer using a remote installation source.
+See</p>
+<p><a href="http://support.citrix.com/proddocs/topic/xenserver/xs-wrapper.html">Citrix Official Documentation</a>
+for more.</p>
+<h2 id="downloading-xenserver">Downloading XenServer</h2>
+<p>Log into <a href="https://www.citrix.com">Citrix site</a> as login is required in
+order to see the Product Software entry into the Find Downloads tool.</p>
+<h2 id="extracting-iso-content">Extracting ISO content</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mkdir xenserver-6.0.0_iso
+sudo mount -o loop XenServer-6.0.0-install-cd.iso xenserver-6.0.0_iso
+sudo mkdir -p /srv/mirror/xen/xenserver/6.0.0/
+sudo cp -r xenserver-6.0.0_iso/* /srv/mirror/xen/xenserver/6.0.0/
+</code></pre></div><h2 id="making-iso-available-at-a-reachable-httpftp-server">Making ISO available at a reachable http/ftp server</h2>
+<p>Simple alias example for apache:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-apache" data-lang="apache"><span class="nb">Alias</span> <span class="sx">/xen</span> <span class="sx">/srv/mirror/xen</span>
+<span class="nt">&lt;Directory</span> <span class="s">/srv/mirror/xen</span><span class="nt">&gt;</span>
+   <span class="nb">Options</span> Indexes FollowSymLinks
+   <span class="nb">AllowOverride</span> <span class="k">None</span>
+   <span class="nb">Order</span> deny,allow
+   <span class="nb">deny</span> from <span class="k">all</span>
+   <span class="nb">allow</span> from <span class="k">all</span>
+<span class="nt">&lt;/Directory&gt;</span>
+</code></pre></div><p>Installation files will be available at <a href="http://server.domain.tld/xen/xenserver/6.0.0/">http://server.domain.tld/xen/xenserver/6.0.0/</a>.</p>
+<h2 id="installing-xenserver">Installing XenServer</h2>
+<ul>
+<li>Boot installation ISO on server</li>
+<li>Configure network</li>
+<li>Configure XenServer installer to retrieve files of http/ftp source</li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Regenerating Puppet certificates</title>
+			<link>https://blog.bapt.name/2014/04/10/regenerating-puppet-certificates/</link>
+			<pubDate>Thu, 10 Apr 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/04/10/regenerating-puppet-certificates/</guid>
+			<description>Bleeding Heart Following the Heartbleed bug and as all Debian stable (wheezy for the time being) are affected and as the puppetmaster is running on debian it is a good idea to regenerate the puppet certificates, here is a quick how-to when using puppet with passenger on debian wheezy.
+Please refer to the official documentation.
+On the puppet master service apache2 stop cp -r /var/lib/puppet/ssl ~/puppet-ssl-backup rm -rf /var/lib/puppet/ssl/* # Kill the master once the CA and certs have been generated using ctrl+c puppet master --no-daemonize --verbose service apache2 start Now a new CA has been created in /var/lib/puppet/ssl, and a cert for the master has been generated and signed, and all the existing agent certificates are now unknown to the CA.</description>
+			<content type="html"><![CDATA[<h2 id="bleeding-heart">Bleeding Heart</h2>
+<p>Following the <a href="http://heartbleed.com">Heartbleed</a> bug and as all Debian
+stable (wheezy for the time being) are affected and as the puppetmaster
+is running on debian it is a good idea
+to regenerate the puppet certificates, here is a quick how-to when using
+puppet with passenger on debian wheezy.</p>
+<p>Please refer to the
+<a href="http://docs.puppetlabs.com/puppet/latest/reference/ssl_regenerate_certificates.html">official documentation</a>.</p>
+<h2 id="on-the-puppet-master">On the puppet master</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">service apache2 stop
+cp -r /var/lib/puppet/ssl ~/puppet-ssl-backup
+rm -rf /var/lib/puppet/ssl/*
+<span class="c1"># Kill the master once the CA and certs have been generated using ctrl+c</span>
+puppet master --no-daemonize --verbose
+service apache2 start
+</code></pre></div><p>Now a new CA has been created in /var/lib/puppet/ssl, and a cert for the
+master has been generated and signed, and all the existing agent
+certificates are now unknown to the CA.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">puppet cert list --all
+</code></pre></div><p>The puppetdb certificates should also be updated.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">rm /etc/puppetdb/ssl/*
+puppetdb ssl-setup
+service puppetdb restart
+</code></pre></div><p>Launch the agent on the master to check that everything is OK.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">puppet agent -tv
+</code></pre></div><h3 id="on-the-puppet-agents">On the puppet agents</h3>
+<p>Stop the agent if it is running and clean the SSL dir.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">service puppet stop
+rm -rf /var/lib/puppet/ssl/*
+</code></pre></div><p>Launch the agent to generate a cert and wait for the cert to be signed.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">puppet agent -tv --waitforcert <span class="m">60</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">puppet cert list
+puppet cert sign xxx.xxx.xxx
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>dependencies with hiera and create resources</title>
+			<link>https://blog.bapt.name/2014/04/07/dependencies-with-hiera-and-create-resources/</link>
+			<pubDate>Mon, 07 Apr 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/04/07/dependencies-with-hiera-and-create-resources/</guid>
+			<description>In a nodeless setup it is possible to manage dependencies between resources created by create_resources, but the syntax is quite strict and caused me some troubles. If the syntax is not correct the traditionnal Could not find dependency error message will be displayed.
+node default { hiera_include (&amp;#39;classes&amp;#39;, []) $packages = hiera_hash(&amp;#39;packages&amp;#39;, {}) create_resources(&amp;#39;package&amp;#39;, $packages) $services = hiera_hash(&amp;#39;services&amp;#39;, {}) create_resources(&amp;#39;service&amp;#39;, $services) } The following won&amp;rsquo;t work:
+services:mysql:ensure:&amp;#39;running&amp;#39;require:Package[&amp;#39;mysql-server&amp;#39;]Nor the following:
+services:mysql:ensure:&amp;#39;running&amp;#39;require:&amp;#34;Package[&amp;#39;mysql-server&amp;#39;]&amp;#34;But the following two syntaxes will work:</description>
+			<content type="html"><![CDATA[<p>In a <a href="/blog/2013/12/11/node-less-puppet-setup-using-hiera">nodeless setup</a> it
+is possible to manage dependencies between resources created by
+create_resources, but the syntax is quite strict and caused me some
+troubles.
+If the syntax is not correct the traditionnal <code>Could not find dependency</code> error message will be displayed.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="n">node</span> <span class="n">default</span> <span class="p">{</span>
+  <span class="n">hiera_include</span> <span class="p">(</span><span class="s1">&#39;classes&#39;</span><span class="p">,</span> <span class="o">[]</span><span class="p">)</span>
+
+  <span class="vg">$packages</span> <span class="o">=</span> <span class="n">hiera_hash</span><span class="p">(</span><span class="s1">&#39;packages&#39;</span><span class="p">,</span> <span class="p">{})</span>
+  <span class="n">create_resources</span><span class="p">(</span><span class="s1">&#39;package&#39;</span><span class="p">,</span> <span class="vg">$packages</span><span class="p">)</span>
+
+  <span class="vg">$services</span> <span class="o">=</span> <span class="n">hiera_hash</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="p">{})</span>
+  <span class="n">create_resources</span><span class="p">(</span><span class="s1">&#39;service&#39;</span><span class="p">,</span> <span class="vg">$services</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>The following won&rsquo;t work:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mysql</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">ensure</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;running&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">require</span><span class="p">:</span><span class="w"> </span><span class="l">Package[&#39;mysql-server&#39;]</span><span class="w">
+</span></code></pre></div><p>Nor the following:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mysql</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">ensure</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;running&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">require</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Package[&#39;mysql-server&#39;]&#34;</span><span class="w">
+</span></code></pre></div><p>But the following two syntaxes will work:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">+++</span><span class="w">
+</span><span class="w"></span><span class="nt">classes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="s1">&#39;puppet::agent&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">packages</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mysql-server</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">ensure</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;installed&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mysql</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">ensure</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;running&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">require</span><span class="p">:</span><span class="w"> </span><span class="l">Package[mysql-server]</span><span class="w">
+</span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">+++</span><span class="w">
+</span><span class="w"></span><span class="nt">classes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="s1">&#39;puppet::agent&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">packages</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mysql-server</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">ensure</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;installed&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mysql</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">ensure</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;running&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">require</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Package[mysql-server]&#39;</span><span class="w">
+</span></code></pre></div><p>See a full example running in Vagrant at <a href="https://github.com/gwarf/puppet-vagrant-playground">https://github.com/gwarf/puppet-vagrant-playground</a></p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Resizing a VM filesystem from Xen host</title>
+			<link>https://blog.bapt.name/2014/02/26/resizing-a-vm-filesystem-from-xen-host/</link>
+			<pubDate>Wed, 26 Feb 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/02/26/resizing-a-vm-filesystem-from-xen-host/</guid>
+			<description>Resizing the disk and filesystem of a VM I had to add more disk space to a Virtual Machine running under XenServer 6.0. In such situation I ususally do like this:
+ create a snapshot (if possible, sometimes disk space makes it impossible) increase the virtual disk size using XenCenter (running from a Windows Virtual Machine&amp;hellip;) boot Sysrescuecd and resize the filesystem using gparted  But this time, due to some known and unknown magic particular things (VT extensions disabled, ISO library avaialble on a remote NFS share with latency problems&amp;hellip; I wasn&amp;rsquo;t able to boot sysrescuecd (nor other recent Live CD I tried), so one of my last option was to attach the VM&amp;rsquo;s virtual disk on the xen host (another VM could have been used too), here are the steps:</description>
+			<content type="html"><![CDATA[<h2 id="resizing-the-disk-and-filesystem-of-a-vm">Resizing the disk and filesystem of a VM</h2>
+<p>I had to add more disk space to a Virtual Machine running under
+XenServer 6.0. In such situation I ususally do like this:</p>
+<ul>
+<li>create a snapshot (if possible, sometimes disk space makes it
+impossible)</li>
+<li>increase the virtual disk size using XenCenter (running from a Windows
+Virtual Machine&hellip;)</li>
+<li>boot Sysrescuecd and resize the filesystem using gparted</li>
+</ul>
+<p>But this time, due to some known and unknown magic particular things (VT
+extensions disabled, ISO library avaialble on a remote NFS share with latency
+problems&hellip; I wasn&rsquo;t able to boot sysrescuecd (nor other recent Live CD I
+tried), so one of my last option was to attach the VM&rsquo;s virtual disk on the
+xen host (another VM could have been used too), here are the steps:</p>
+<ul>
+<li>Find xen host uuid</li>
+<li>Find VM uuid</li>
+<li>Find VM&rsquo;s disk VDI uuid</li>
+<li>Create a new VBD for the xen host to plug the VDI in</li>
+<li>Stop the VM</li>
+<li>Plug the VBD</li>
+<li>Resize the partition and filesystem</li>
+<li>unplug and destroy the VBD</li>
+<li>Restart the VM</li>
+</ul>
+<h3 id="hands-on">Hands-on</h3>
+<p>From the xenserver shell:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">hostuuid</span><span class="o">=</span><span class="k">$(</span>xe vm-list name-label<span class="o">=</span><span class="s1">&#39;Control domain on host: xenserver-XXX&#39;</span> <span class="se">\
+</span><span class="se"></span>  <span class="p">|</span> awk <span class="s1">&#39;/uuid/ {print $5}&#39;</span><span class="k">)</span>
+xe vm-list <span class="nv">uuid</span><span class="o">=</span><span class="nv">$hostuuid</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">vmuuid</span><span class="o">=</span><span class="k">$(</span>xe vm-list name-label<span class="o">=</span>xxx.domain.tld <span class="p">|</span> awk <span class="s1">&#39;/uuid/ {print $5}&#39;</span><span class="k">)</span>
+xe vm-list <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vmuuid</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">xe vm-disk-list <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vmuuid</span>
+<span class="nv">vdiuuid</span><span class="o">=</span>xxxx-xxxx-xxx-xxx-xxxx
+xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">vbduuid</span><span class="o">=</span><span class="k">$(</span>xe vbd-create <span class="nv">device</span><span class="o">=</span><span class="m">0</span> vm-uuid<span class="o">=</span><span class="nv">$hostuuid</span> vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span> <span class="se">\
+</span><span class="se"></span>  <span class="nv">bootable</span><span class="o">=</span><span class="nb">false</span> <span class="nv">mode</span><span class="o">=</span>RW <span class="nv">type</span><span class="o">=</span>Disk<span class="k">)</span>
+xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">xe vbd-plug <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vbduuid</span>
+xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</code></pre></div><p>Now the virtual disk of the VM is seen as a local device (/dev/xvda) on
+the xen host, it can be accessed using the standard fdisk, parted, mount
+tools.</p>
+<p>At first I tried to use parted&rsquo;s
+<a href="https://www.gnu.org/software/parted/manual/html_chapter/parted_toc.html#TOC25">resize</a>
+command but it didn&rsquo;t work, so I add to delete and recreate the
+partition manually according to the cylinders.
+(be sure to save the layout of the partitions before messing with
+them&hellip;)
+(and using tmux is highly recommended for such tasks.)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">parted /dev/xvda                                                                                                                                <span class="o">[</span>86/818<span class="o">]</span>
+GNU Parted 1.8.1
+Using /dev/xvda
+Welcome to GNU Parted! Type <span class="s1">&#39;help&#39;</span> to view a list of commands.
+<span class="o">(</span>parted<span class="o">)</span> unit s                                                           
+<span class="o">(</span>parted<span class="o">)</span> print                                                            
+
+Model: Xen Virtual Block Device <span class="o">(</span>xvd<span class="o">)</span>
+Disk /dev/xvda: 83886079s
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+Partition Table: msdos
+
+Number  Start  End        Size       Type     File system  Flags
+ <span class="m">1</span>      2048s  15988735s  15986688s  primary  ext3         boot 
+
+<span class="o">(</span>parted<span class="o">)</span> rm <span class="m">1</span>                                                             
+<span class="o">(</span>parted<span class="o">)</span> mkpart
+Partition type?  primary/extended? primary
+File system type?  <span class="o">[</span>ext2<span class="o">]</span>? ext3                                           
+Start? 2048s
+End? 83886078s
+<span class="o">(</span>parted<span class="o">)</span> print                                                            
+
+Model: Xen Virtual Block Device <span class="o">(</span>xvd<span class="o">)</span>
+Disk /dev/xvda: 83886079s
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+Partition Table: msdos
+
+Number  Start  End        Size       Type     File system  Flags
+ <span class="m">1</span>      2048s  83886078s  83884031s  primary  ext3              
+
+<span class="o">(</span>parted<span class="o">)</span> toggle <span class="m">1</span> boot
+<span class="o">(</span>parted<span class="o">)</span> print
+
+Model: Xen Virtual Block Device <span class="o">(</span>xvd<span class="o">)</span>
+Disk /dev/xvda: 83886079s
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+Partition Table: msdos
+
+Number  Start  End        Size       Type     File system  Flags
+ <span class="m">1</span>      2048s  83886078s  83884031s  primary  ext3         boot 
+
+<span class="o">(</span>parted<span class="o">)</span> quit                                                             
+Information: Don<span class="err">&#39;</span>t forget to update /etc/fstab, <span class="k">if</span> necessary.
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">resize2fs /dev/xvda1    
+resize2fs 1.39 <span class="o">(</span>29-May-2006<span class="o">)</span>
+Resizing the filesystem on /dev/xvda1 to <span class="m">10485503</span> <span class="o">(</span>4k<span class="o">)</span> blocks.
+The filesystem on /dev/xvda1 is now <span class="m">10485503</span> blocks long
+
+fsck.ext3 -f /dev/xvda1
+e2fsck 1.39 <span class="o">(</span>29-May-2006<span class="o">)</span>
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/xvda1: 144207/2621440 files <span class="o">(</span>3.3% non-contiguous<span class="o">)</span>, 1506575/10485503 blocks
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">xe vbd-unplug <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vbduuid</span>
+xe vbd-destroy <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vbduuid</span>
+xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</code></pre></div><p>Done, the VM can now be restarted!</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Starting to play with Puppet Enterprise</title>
+			<link>https://blog.bapt.name/2014/02/14/starting-to-play-with-puppet-enterprise/</link>
+			<pubDate>Fri, 14 Feb 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/02/14/starting-to-play-with-puppet-enterprise/</guid>
+			<description>Why Puppet Enterprise? @work we are using puppet to manage our servers, currently we are using Puppet Open Source edition with great satisfaction.
+Being curious I always wanted to try the Puppet Enterprise edition, which is no more free, following my server migration (moving from a FreeBSD-based OVH dedicated server to a less expensive Kimsufi) I have to setup a new way of managing my VMs, after some quick and opinionated reading, I dropped the idea to use Chief and after a bit of additional readings I skipped Ansible too as I like some puppet concepts like exported/collected resources allowing to setup a dynamic environment.</description>
+			<content type="html"><![CDATA[<h2 id="why-puppet-enterprise">Why Puppet Enterprise?</h2>
+<p><em><a href="https://gnubila.fr">@work</a></em> we are using puppet to manage our servers,
+currently we are using Puppet Open Source edition with great satisfaction.</p>
+<p>Being curious I always wanted to try the Puppet Enterprise edition, which is no
+more free, following my server migration (moving from a FreeBSD-based OVH
+dedicated server to a less expensive Kimsufi) I have to setup a new way of
+managing my VMs, after some quick and opinionated reading, I dropped the idea to
+use Chief and after a bit of additional readings I skipped Ansible too as I
+like some puppet concepts like exported/collected resources allowing to setup a
+dynamic environment.</p>
+<p>As Puppet Enterprise is free for managing up to 10 nodes (I don&rsquo;t plan to have
+more than 10 nodes for my personal use ;) ) it turns out it is the perfect
+occasion to git it a try, so let&rsquo;s jump in!</p>
+<h2 id="installing-puppet-enterprise">Installing Puppet Enterprise</h2>
+<p>Downloading <a href="http://info.puppetlabs.com/download-pe.html">Puppet Enterprise</a>
+only requires to register with an email, a mail with the download information
+for the different OS will be sent.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wget https://s3.amazonaws.com/pe-builds/released/3.1.3/puppet-enterprise-3.1.3-debian-7-amd64.tar.gz
+tar xf puppet-enterprise-3.1.3-debian-7-amd64.tar.gz
+<span class="nb">cd</span> puppet-enterprise-3.1.3-debian-7-amd64/
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">% tree
+.
+├── answers
+│   ├── agent_no_cloud.answer.sample
+│   ├── agent_with_cloud.answer.sample
+│   ├── console_only.answer.sample
+│   ├── full_suite.answer.sample
+│   ├── full_suite_existing_postgres.sample
+│   ├── full_suite_existing_remote_postgres.sample
+│   └── master_only.answer.sample
+├── db_import_export.rake
+├── erb
+│   ├── auth.conf.erb
+│   ├── autosign.conf.erb
+│   ├── cas_client_config.yml.erb
+│   ├── config.ru.erb
+│   ├── console_auth_config.yml.erb
+│   ├── console_auth_db_config.yml.erb
+│   ├── console_auth_log_config.yml
+│   ├── databases.erb
+│   ├── database.yml.erb
+│   ├── event_inspector_config.yml.erb
+│   ├── external_node.erb
+│   ├── license_status_config.yml.erb
+│   ├── puppet.conf.erb
+│   ├── puppetdashboard.conf.erb
+│   ├── puppetdb_master.pp.erb
+│   ├── puppetdb.pp.erb
+│   ├── puppetmaster.conf.erb
+│   ├── read_console_auth_db_config.erb
+│   ├── rewrite_rubycas_config.yml.erb
+│   ├── rubycas_config_upgrade_comments.txt
+│   ├── rubycas_config.yml.erb
+│   ├── settings.yml.erb
+│   └── site.pp.erb
+├── gpg
+│   └── GPG-KEY-puppetlabs
+├── LICENSE.txt
+├── modules
+│   ├── cprice404-inifile-0.10.3.tar.gz
+│   ├── install_modules.txt
+│   ├── puppetlabs-apt-1.1.0.tar.gz
+│   ├── puppetlabs-auth_conf-0.1.7.tar.gz
+│   ├── puppetlabs-firewall-0.3.0.tar.gz
+│   ├── puppetlabs-java_ks-1.1.0.tar.gz
+│   ├── puppetlabs-pe_accounts-2.0.1.tar.gz
+│   ├── puppetlabs-pe_common-0.1.0.tar.gz
+│   ├── puppetlabs-pe_mcollective-0.1.14.tar.gz
+│   ├── puppetlabs-pe_postgresql-0.0.5.tar.gz
+│   ├── puppetlabs-pe_puppetdb-0.0.11.tar.gz
+│   ├── puppetlabs-postgresql-2.5.0.tar.gz
+│   ├── puppetlabs-puppetdb-1.5.1.tar.gz
+│   ├── puppetlabs-puppet_enterprise-3.1.0.tar.gz
+│   ├── puppetlabs-reboot-0.1.2.tar.gz
+│   ├── puppetlabs-request_manager-0.0.10.tar.gz
+│   ├── puppetlabs-stdlib-3.2.0.tar.gz
+│   └── ripienaar-concat-0.2.0.tar.gz
+├── noask
+│   └── solaris-noask
+├── packages
+│   ├── debian-7-amd64
+│   │   ├── Packages
+│   │   ├── Packages.gz
+│   │   ├── pe-activemq_5.8.0-1puppet5_all.deb
+│   │   ├── pe-activerecord_2.3.17-1puppet2_all.deb
+│   │   ├── pe-activesupport_2.3.17-1puppet2_all.deb
+│   │   ├── pe-augeas_1.1.0-1puppet1_amd64.deb
+│   │   ├── pe-bundler_1.3.5-1puppet2_all.deb
+│   │   ├── pe-certificate-manager_0.4.7-1puppet1_all.deb
+│   │   ├── pe-certificate-manager-test_0.4.7-1puppet1_all.deb
+│   │   ├── pe-cloud-provisioner_1.1.4-puppet1_all.deb
+│   │   ├── pe-cloud-provisioner-libs_0.3.2-1puppet1_amd64.deb
+│   │   ├── pe-console_0.3.10-1puppet1_all.deb
+│   │   ├── pe-console-auth_1.2.21-1puppet1_all.deb
+│   │   ├── pe-console-test_0.3.10-1puppet1_all.deb
+│   │   ├── pe-event-inspector_0.1.0-1puppet1_all.deb
+│   │   ├── pe-facter_1.7.3.1-1puppet1_amd64.deb
+│   │   ├── pe-hiera_1.2.2.1-1puppet1_all.deb
+│   │   ├── pe-httpd_2.2.25-1puppet4_amd64.deb
+│   │   ├── pe-httpd-bin_2.2.25-1puppet4_amd64.deb
+│   │   ├── pe-httpd-common_2.2.25-1puppet4_amd64.deb
+│   │   ├── pe-httpd-doc_2.2.25-1puppet4_all.deb
+│   │   ├── pe-httpd-mpm-worker_2.2.25-1puppet4_amd64.deb
+│   │   ├── pe-httpd-prefork-dev_2.2.25-1puppet4_amd64.deb
+│   │   ├── pe-httpd-utils_2.2.25-1puppet4_amd64.deb
+│   │   ├── pe-java_1.7.0.19-1puppet1_amd64.deb
+│   │   ├── pe-libevent_2.0.13-1puppet3_amd64.deb
+│   │   ├── pe-libevent-devel_2.0.13-1puppet3_amd64.deb
+│   │   ├── pe-libyaml_0.1.4-1puppet3_amd64.deb
+│   │   ├── pe-license_0.1.1-1puppet1_all.deb
+│   │   ├── pe-license-status_0.1.5-1puppet1_all.deb
+│   │   ├── pe-license-status-test_0.1.5.1-1puppet1_all.deb
+│   │   ├── pe-live-management_1.2.16-1puppet1_all.deb
+│   │   ├── pe-mcollective_2.2.4-1puppet2_all.deb
+│   │   ├── pe-mcollective-client_2.2.4-1puppet2_all.deb
+│   │   ├── pe-mcollective-common_2.2.4-1puppet2_all.deb
+│   │   ├── pe-memcached_1.4.7-1puppet4_amd64.deb
+│   │   ├── pe-memcached-devel_1.4.7-1puppet4_amd64.deb
+│   │   ├── pe-passenger_4.0.18-1puppet3_amd64.deb
+│   │   ├── pe-postgresql_9.2.4-2puppet5_amd64.deb
+│   │   ├── pe-postgresql-contrib_9.2.4-2puppet5_amd64.deb
+│   │   ├── pe-postgresql-devel_9.2.4-2puppet5_amd64.deb
+│   │   ├── pe-postgresql-server_9.2.4-2puppet5_amd64.deb
+│   │   ├── pe-puppet_3.3.3.2-1puppet1_all.deb
+│   │   ├── pe-puppet-dashboard_2.0.14-1puppet1_amd64.deb
+│   │   ├── pe-puppetdb_1.5.1.pe-1puppetlabs1_all.deb
+│   │   ├── pe-puppetdb-terminus_1.5.1.pe-1puppetlabs1_all.deb
+│   │   ├── pe-puppet-enterprise-release_3.1.3-1puppet1_all.deb
+│   │   ├── pe-puppet-license-cli_0.1.6-1puppet1_all.deb
+│   │   ├── pe-puppet-server_3.3.3.2-1puppet1_all.deb
+│   │   ├── pe-ruby_1.9.3.448-1puppet5_amd64.deb
+│   │   ├── pe-ruby-augeas_0.5.0-1puppet2_amd64.deb
+│   │   ├── pe-rubycas-server_1.1.15-1puppet1_all.deb
+│   │   ├── pe-rubygem-deep-merge_1.0.0-1puppet1_all.deb
+│   │   ├── pe-rubygem-net-ssh_2.1.4-1puppet2_all.deb
+│   │   ├── pe-rubygem-rack_1.4.5-1puppet2_all.deb
+│   │   ├── pe-rubygem-sequel_3.47.0-1puppet1_all.deb
+│   │   ├── pe-rubygem-stomp_1.2.9-1puppet1_all.deb
+│   │   ├── pe-ruby-ldap_0.9.12-1puppet2_amd64.deb
+│   │   ├── pe-ruby-mysql_2.8.2-1puppet2_amd64.deb
+│   │   ├── pe-ruby-rgen_0.6.5-1puppet1_all.deb
+│   │   ├── pe-ruby-shadow_2.2.0-1puppet3_amd64.deb
+│   │   ├── pe-ruby-stomp_1.2.9-1puppet2_all.deb
+│   │   ├── pe-tanukiwrapper_3.5.9-1puppet5_amd64.deb
+│   │   ├── Release
+│   │   └── Release.gpg
+│   └── debian-7-amd64-package-versions.json
+├── puppet-enterprise-installer
+├── puppet-enterprise-uninstaller
+├── README.markdown
+├── support
+├── supported_platforms
+├── util
+│   └── pe-man
+├── utilities
+└── VERSION
+
+<span class="m">8</span> directories, <span class="m">126</span> files
+
+$ du -schx ../puppet-enterprise-3.1.3-debian-7-amd64 
+254M    ../puppet-enterprise-3.1.3-debian-7-amd64
+</code></pre></div><p>Yep, that&rsquo;s huge!</p>
+<p>In order to install the agent on my workstation (running
+<a href="https://archlinux.org">Archlinux</a>) I downloaded the non packaged *nix flavour,
+which is 3.6GB fat!</p>
+<p>I will see later if thre is an alternate way.</p>
+<h2 id="installation-steps">Installation steps</h2>
+<p>According to
+<a href="http://docs.puppetlabs.com/pe/latest/install_system_requirements.html">Puppet Enterprise documentation</a>
+it is required to follow the following deployment order:</p>
+<ul>
+<li>Puppet Master</li>
+<li>Database Support/PuppetDB</li>
+<li>Console</li>
+<li>Agents</li>
+</ul>
+<p>The puppet master will be installed on the same node as the puppetdb and web
+console.</p>
+<p>Other nodes will only be agents.</p>
+<h3 id="creating-the-postgresql-databases">Creating the PostgreSQL databases</h3>
+<p>The node already runs a PostgreSQL database, so I won&rsquo;t use puppet&rsquo;s embedded one.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">sudo su - postgres
+postgres@misc:~$ createuser -P -D -R -S pe-puppetdb
+Enter password <span class="k">for</span> new role:
+Enter it again: 
+postgres@misc:~$ createdb -O pe-puppetdb -E UTF8 pe-puppetdb
+postgres@misc:~$ createuser -P -D -R -S console
+Enter password <span class="k">for</span> new role: 
+Enter it again: 
+postgres@misc:~$ createdb -O console -E UTF8 console
+postgres@misc:~$ createuser -P -D -R -S console_auth
+Enter password <span class="k">for</span> new role:
+Enter it again: 
+postgres@misc:~$ createdb -O console_auth -E UTF8 console_auth
+postgres@misc:~$
+</code></pre></div><h3 id="launching-the-installation-of-the-puppet-master">Launching the installation of the puppet master</h3>
+<p>The installation script asks for configurations settings and is really
+straight-forward, just be sure to set y to ask for master and puppetdb
+installation.</p>
+<p>The script can also be called using a response file (see &ndash;help output).
+A response file will be generated using the interactive choices.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">./puppet-enterprise-installer
+</code></pre></div><p>Once the installation is over remember to open the following <em>3000, 8140, 61613</em> TCP ports.</p>
+<p>The web Console is now reachable at: <a href="https://host.tld.domain:3000">https://host.tld.domain:3000</a>.</p>
+<p>Following is the answer file generated by the installer, it can be provided to
+the installer like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">./puppet-enterprise-installer -a answerfile
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">q_all_in_one_install</span><span class="o">=</span>y
+<span class="nv">q_backup_and_purge_old_configuration</span><span class="o">=</span>n
+<span class="nv">q_database_host</span><span class="o">=</span>localhost
+<span class="nv">q_database_install</span><span class="o">=</span>n
+<span class="nv">q_database_port</span><span class="o">=</span><span class="m">5432</span>
+<span class="nv">q_install</span><span class="o">=</span>y
+<span class="nv">q_pe_database</span><span class="o">=</span>n
+<span class="nv">q_puppet_cloud_install</span><span class="o">=</span>n
+<span class="nv">q_puppet_enterpriseconsole_auth_database_name</span><span class="o">=</span>console_auth
+<span class="nv">q_puppet_enterpriseconsole_auth_database_password</span><span class="o">=</span>XXXXXXXXXX
+<span class="nv">q_puppet_enterpriseconsole_auth_database_user</span><span class="o">=</span>console_auth
+<span class="nv">q_puppet_enterpriseconsole_auth_password</span><span class="o">=</span><span class="s1">&#39;XXXXXXXXXXXXXXXXX&#39;</span>
+<span class="nv">q_puppet_enterpriseconsole_auth_user_email</span><span class="o">=</span>baptiste@bapt.name
+<span class="nv">q_puppet_enterpriseconsole_database_name</span><span class="o">=</span>console
+<span class="nv">q_puppet_enterpriseconsole_database_password</span><span class="o">=</span>XXXXXXXXXX
+<span class="nv">q_puppet_enterpriseconsole_database_user</span><span class="o">=</span>console
+<span class="nv">q_puppet_enterpriseconsole_httpd_port</span><span class="o">=</span><span class="m">3000</span>
+<span class="nv">q_puppet_enterpriseconsole_install</span><span class="o">=</span>y
+<span class="nv">q_puppet_enterpriseconsole_master_hostname</span><span class="o">=</span>puppet.tld.domain
+<span class="nv">q_puppet_enterpriseconsole_smtp_host</span><span class="o">=</span>localhost
+<span class="nv">q_puppet_enterpriseconsole_smtp_password</span><span class="o">=</span>
+<span class="nv">q_puppet_enterpriseconsole_smtp_port</span><span class="o">=</span><span class="m">25</span>
+<span class="nv">q_puppet_enterpriseconsole_smtp_use_tls</span><span class="o">=</span>n
+<span class="nv">q_puppet_enterpriseconsole_smtp_user_auth</span><span class="o">=</span>n
+<span class="nv">q_puppet_enterpriseconsole_smtp_username</span><span class="o">=</span>
+<span class="nv">q_puppet_symlinks_install</span><span class="o">=</span>y
+<span class="nv">q_puppetagent_certname</span><span class="o">=</span>puppet.bapt.name
+<span class="nv">q_puppetagent_install</span><span class="o">=</span>y
+<span class="nv">q_puppetagent_server</span><span class="o">=</span>puppet.bapt.name
+<span class="nv">q_puppetdb_database_name</span><span class="o">=</span>pe-puppetdb
+<span class="nv">q_puppetdb_database_password</span><span class="o">=</span>XXXXXXXXXX
+<span class="nv">q_puppetdb_database_user</span><span class="o">=</span>pe-puppetdb
+<span class="nv">q_puppetdb_hostname</span><span class="o">=</span>puppet.bapt.name
+<span class="nv">q_puppetdb_install</span><span class="o">=</span>y
+<span class="nv">q_puppetdb_port</span><span class="o">=</span><span class="m">8081</span>
+<span class="nv">q_puppetmaster_certname</span><span class="o">=</span>puppet.tld.domain
+<span class="nv">q_puppetmaster_dnsaltnames</span><span class="o">=</span>puppet,puppet.tld.domain
+<span class="nv">q_puppetmaster_enterpriseconsole_hostname</span><span class="o">=</span>localhost
+<span class="nv">q_puppetmaster_enterpriseconsole_port</span><span class="o">=</span><span class="m">3000</span>
+<span class="nv">q_puppetmaster_install</span><span class="o">=</span>y
+<span class="nv">q_run_updtvpkg</span><span class="o">=</span>n
+<span class="nv">q_vendor_packages_install</span><span class="o">=</span>y
+</code></pre></div><h3 id="launching-the-installation-of-a-node">Launching the installation of a node</h3>
+<p>On agent nodes you too have to download and extract the archive.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wget https://s3.amazonaws.com/pe-builds/released/3.1.3/puppet-enterprise-3.1.3-debian-7-amd64.tar.gz
+tar xf puppet-enterprise-3.1.3-debian-7-amd64.tar.gz
+<span class="nb">cd</span> puppet-enterprise-3.1.3-debian-7-amd64/
+./puppet-enterprise-installer
+</code></pre></div><p>Then the installation can be launched in the same way as for the master, but
+this time all the defaults should be OK, I just put the complete FQDN for the
+puppet server.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">./puppet-enterprise-installer
+</code></pre></div><p>Following is the answer file generated by the installer.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">q_all_in_one_install</span><span class="o">=</span>n
+<span class="nv">q_database_install</span><span class="o">=</span>n
+<span class="nv">q_fail_on_unsuccessful_master_lookup</span><span class="o">=</span>y
+<span class="nv">q_install</span><span class="o">=</span>y
+<span class="nv">q_puppet_cloud_install</span><span class="o">=</span>n
+<span class="nv">q_puppet_enterpriseconsole_install</span><span class="o">=</span>n
+<span class="nv">q_puppet_symlinks_install</span><span class="o">=</span>y
+<span class="nv">q_puppetagent_certname</span><span class="o">=</span>host.domain.tld
+<span class="nv">q_puppetagent_install</span><span class="o">=</span>y
+<span class="nv">q_puppetagent_server</span><span class="o">=</span>puppet.domain.tld
+<span class="nv">q_puppetca_install</span><span class="o">=</span>n
+<span class="nv">q_puppetdb_install</span><span class="o">=</span>n
+<span class="nv">q_puppetmaster_install</span><span class="o">=</span>n
+<span class="nv">q_run_updtvpkg</span><span class="o">=</span>n
+<span class="nv">q_vendor_packages_install</span><span class="o">=</span>y
+</code></pre></div><h2 id="cleaning-puppet-enterprise-installation">Cleaning Puppet Enterprise installation</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">./puppet-enterprise-uninstaller -d -p -y
+</code></pre></div><h2 id="first-steps">First steps</h2>
+<p>Puppetlabs provides an <a href="http://docs.puppetlabs.com/pe/latest/quick_start.html">helpful quick start guide</a>.</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>checking se and lfc consistency</title>
+			<link>https://blog.bapt.name/2014/02/11/checking-se-and-lfc-consistency/</link>
+			<pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/02/11/checking-se-and-lfc-consistency/</guid>
+			<description>Dealing with inconsistency between the LFC and DPM The biomed VO team made accessible some useful tools to enforce consistency of Storage Elements (SE) and Logical File Catalog (LFC) available on github.
+In the neugrid4you project we have a lot of big dataset made available to our user community, but some of the datasets are very big, (ADNI is something like 30 GiB) and we have to copy and register them in the grid on multiple SE and register in our LFC.</description>
+			<content type="html"><![CDATA[<h2 id="dealing-with-inconsistency-between-the-lfc-and-dpm">Dealing with inconsistency between the LFC and DPM</h2>
+<p>The biomed VO team made accessible some useful tools to enforce
+consistency of Storage Elements (SE) and Logical File Catalog (LFC)
+available on <a href="https://github.com/frmichel/biomed-support-tools">github</a>.</p>
+<p>In the <a href="https://neugrid4you.eu">neugrid4you project</a> we have a lot of
+<a href="https://neugrid4you.eu/datasets">big dataset</a> made available to our
+user community, but some of the datasets are very big,
+(<a href="https://ida.loni.ucla.edu/login.jsp?project=ADNI">ADNI</a> is
+something like 30 GiB) and we have to copy and register them in the grid
+on multiple SE and register in our LFC.
+In order to ensure that there isn&rsquo;t any inconsistency (i.e. in order to
+cl ean all the inconsistencies ;) )</p>
+<h2 id="retrieving-inconsistencies">Retrieving inconsistencies</h2>
+<p>The <em>diff-se-dump-lfc.sh</em> script is used to find inconsistencies between
+a dump of a DPM and of the LFC.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dump-se-files.py <span class="se">\
+</span><span class="se"></span>  --url srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt; <span class="se">\
+</span><span class="se"></span>  --output-file &lt;dpm_server_name&gt;-dpm-dump.txt
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">export</span> <span class="nv">LFC_HOST</span><span class="o">=</span>&lt;lfc_host&gt;
+LFCBrowseSE &lt;dpm_server_name&gt; --vo &lt;vo_name&gt; --sfn &gt; &lt;lfc_host&gt;-&lt;vo_name&gt;-lfc-dump.txt
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">diff-se-dump-lfc.sh --older-than <span class="m">1</span> <span class="se">\
+</span><span class="se"></span>  --se &lt;dpm_server_name&gt; <span class="se">\
+</span><span class="se"></span>  --se-dump &lt;dpm_server_name&gt;-dpm-dump.txt <span class="se">\
+</span><span class="se"></span>  --lfc-dump &lt;lfc_host&gt;-&lt;vo_name&gt;-lfc-dump.txt
+</code></pre></div><p>The script will report <em>zombie files</em>, <em>ghost entries</em> and files found
+both in the SE and the LFC.</p>
+<p>Zombie files are files that exist in the SE but are no more referenced
+in the LFC.</p>
+<p>Ghost entries are entries in the LFC that have no corresponding files on
+the SE.</p>
+<h2 id="cleaning-ghost-entries">Cleaning ghost entries</h2>
+<p>There is no automatic way of cleaning ghost entries, and in order to
+retrieve the corresponding LFN it is required to directly access the LFC
+database.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span><span class="w"> </span><span class="n">Cns_file_metadata</span><span class="p">.</span><span class="n">fileid</span><span class="p">,</span><span class="n">guid</span><span class="p">,</span><span class="n">name</span><span class="w">
+</span><span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">Cns_file_metadata</span><span class="w">
+</span><span class="w">  </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">Cns_file_replica</span><span class="w">
+</span><span class="w">  </span><span class="k">ON</span><span class="w"> </span><span class="n">Cns_file_metadata</span><span class="p">.</span><span class="n">fileid</span><span class="o">=</span><span class="n">Cns_file_replica</span><span class="p">.</span><span class="n">fileid</span><span class="w">
+</span><span class="w">  </span><span class="k">WHERE</span><span class="w"> </span><span class="n">sfn</span><span class="o">=</span><span class="s1">&#39;srm: //&lt;dpm_server_name&gt;:8446/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2014-02-10/file-121aa7e8-a9ec-4401-84f1-24341a74433c&#39;</span><span class="p">;</span><span class="w">
+</span></code></pre></div><p><code>Script for retrieving the guid of a sfn</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="cp">#!/bin/sh
+</span><span class="cp"></span>
+<span class="nb">set</span> -e
+
+<span class="nv">SFN</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+<span class="nv">DB_NAME</span><span class="o">=</span>cns_db
+<span class="nv">QUERY</span><span class="o">=</span><span class="s2">&#34;SELECT guid FROM Cns_file_metadata INNER
+</span><span class="s2">JOIN Cns_file_replica
+</span><span class="s2">ON Cns_file_metadata.fileid=Cns_file_replica.fileid
+</span><span class="s2">WHERE sfn=&#39;</span><span class="nv">$SFN</span><span class="s2">&#39;&#34;</span>
+
+<span class="nv">GUID</span><span class="o">=</span><span class="k">$(</span>mysql --batch --silent <span class="s2">&#34;</span><span class="nv">$DB_NAME</span><span class="s2">&#34;</span> -e <span class="s2">&#34;</span><span class="nv">$QUERY</span><span class="s2">&#34;</span><span class="k">)</span>
+
+<span class="nb">echo</span> <span class="s2">&#34;guid:</span><span class="nv">$GUID</span><span class="s2">&#34;</span>
+
+<span class="nb">exit</span> <span class="m">0</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="k">for</span> sfn in <span class="k">$(</span>cat &lt;dpm_server_name&gt;.output_lfc_lost_files<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+  ./get-lfn-for-ghostfile.sh <span class="nv">$sfn</span>
+<span class="k">done</span> &gt; guid-list.txt
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="k">for</span> guid in <span class="k">$(</span>cat guid-list.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+  lcg-la <span class="nv">$guid</span>
+<span class="k">done</span>
+</code></pre></div><p>Once the list of lfn has been retrieved it is possible to remove the
+wrong entries.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">% lcg-lr lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file7fa6f030-f029-418c-a60c-5a8d04253a68
+srm://&lt;dpm2_server_name&gt;/dpm/&lt;dpm2_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file2e44af61-a0e0-4868-af30-d08d9e3a7a69
+
+% lcg-del --force srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file7fa6f030-f029-418c-a60c-5a8d04253a68
+
+% lcg-lr lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+srm://&lt;dpm2_server_name&gt;/dpm/&lt;dpm2_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file2e44af61-a0e0-4868-af30-d08d9e3a7a69
+
+% lcg-rep -d &lt;dpm_server_name&gt;
+lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+
+% lcg-lr
+% lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2014-02-12/filecb922278-02c3-4642-b085-0f3695c9aaee
+srm://&lt;dpm2_server_name&gt;/dpm/&lt;dpm2_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file2e44af61-a0e0-4868-af30-d08d9e3a7a69
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>centralized docs for devs</title>
+			<link>https://blog.bapt.name/2014/02/05/centralized-docs-for-devs/</link>
+			<pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/02/05/centralized-docs-for-devs/</guid>
+			<description>Sites and applications with bundled API documentations for various projects/languagues/libraries.
+ http://devdocs.io/about http://www.helpmesh.net/ http://zealdocs.org/  </description>
+			<content type="html"><![CDATA[<p>Sites and applications with bundled API documentations for various
+projects/languagues/libraries.</p>
+<ul>
+<li><a href="http://devdocs.io/about">http://devdocs.io/about</a></li>
+<li><a href="http://www.helpmesh.net/">http://www.helpmesh.net/</a></li>
+<li><a href="http://zealdocs.org/">http://zealdocs.org/</a></li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Mail server migration</title>
+			<link>https://blog.bapt.name/2014/01/18/mail-server-migration/</link>
+			<pubDate>Sat, 18 Jan 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/01/18/mail-server-migration/</guid>
+			<description>Goal Migrating a mail server from one server (FreeBSD physical server) to another one (Debian virtual machine) without loosing mails.
+Mail server Retrieving mails from other email providers  fetchmail (cron)  crontab -e */3 * * * * $HOME/bin/getmymailnow &amp;gt; /dev/null ~/bin/getmymailnow:
+#!/bin/sh LOCKFILE=&amp;#34;$0.lock&amp;#34; PATH=&amp;#34;/bin:/usr/bin&amp;#34; if [ -f &amp;#34;$LOCKFILE&amp;#34; ]; then PID=$(cat &amp;#34;$LOCKFILE&amp;#34;) if ! ps $PID 2&amp;gt; /dev/null; then echo &amp;#34;Ignoring stalled lock file&amp;#34; &amp;gt;&amp;amp;2 else echo &amp;#34;Script already running (PID=$PID)&amp;#34; &amp;gt;&amp;amp;2 exit 1 fi fi fetchmail -a -s -m &amp;#34;procmail -d %T&amp;#34; 2&amp;gt;&amp;amp;1 echo $!</description>
+			<content type="html"><![CDATA[<h2 id="goal">Goal</h2>
+<p>Migrating a mail server from one server (FreeBSD physical server) to another
+one (Debian virtual machine) without loosing mails.</p>
+<h2 id="mail-server">Mail server</h2>
+<h3 id="retrieving-mails-from-other-email-providers">Retrieving mails from other email providers</h3>
+<ul>
+<li>fetchmail (cron)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">crontab -e
+*/3 * * * * <span class="nv">$HOME</span>/bin/getmymailnow &gt; /dev/null
+</code></pre></div><p><code>~/bin/getmymailnow</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="cp">#!/bin/sh
+</span><span class="cp"></span><span class="nv">LOCKFILE</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$0</span><span class="s2">.lock&#34;</span>
+<span class="nv">PATH</span><span class="o">=</span><span class="s2">&#34;/bin:/usr/bin&#34;</span>
+
+<span class="k">if</span> <span class="o">[</span> -f <span class="s2">&#34;</span><span class="nv">$LOCKFILE</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nv">PID</span><span class="o">=</span><span class="k">$(</span>cat <span class="s2">&#34;</span><span class="nv">$LOCKFILE</span><span class="s2">&#34;</span><span class="k">)</span>
+  <span class="k">if</span> ! ps <span class="nv">$PID</span> 2&gt; /dev/null<span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&#34;Ignoring stalled lock file&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+  <span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">&#34;Script already running (PID=</span><span class="nv">$PID</span><span class="s2">)&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+    <span class="nb">exit</span> <span class="m">1</span>
+  <span class="k">fi</span>
+<span class="k">fi</span>
+
+fetchmail -a -s -m <span class="s2">&#34;procmail -d %T&#34;</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span>
+
+<span class="nb">echo</span> <span class="nv">$!</span> &gt; <span class="nv">$LOCKFILE</span>
+<span class="nb">wait</span>
+rm <span class="s2">&#34;</span><span class="nv">$LOCKFILE</span><span class="s2">&#34;</span>
+
+<span class="nb">exit</span> <span class="m">0</span>
+</code></pre></div><h3 id="tools-used-for-localvirtual-mail-handling">Tools used for local/virtual mail handling</h3>
+<ul>
+<li>Postfix</li>
+<li>Dovecot</li>
+<li>Spamassassin</li>
+<li>roundcube</li>
+<li>procmail</li>
+<li>fetchmail</li>
+<li>bind</li>
+</ul>
+<h2 id="initial-step">Initial step</h2>
+<ul>
+<li>
+<p>Create required users on new server</p>
+</li>
+<li>
+<p>Configure postfix on new server as it was on old one</p>
+<ul>
+<li>remove mail domain from mydestination to old server</li>
+<li>set relayhost to old server</li>
+</ul>
+</li>
+<li>
+<p>If different domain should be relayed to different places:</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">transport_maps</span> <span class="o">=</span> hash:/etc/postfix/transport_maps
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">domain.tld smtp:<span class="o">[</span>mail.plop.tld<span class="o">]</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">postmap /etc/postfix/transport_maps
+service postfix restart
+</code></pre></div><ul>
+<li>Update MX in DNS conf to use new server</li>
+</ul>
+<p>All mails should now go to new server, and this one will relay mails to old server.</p>
+<ul>
+<li>Install dovecot on new server</li>
+<li>Migrate and update conf, see <a href="http://wiki2.dovecot.org/Upgrading/2.0">upgrading dovecot</a></li>
+<li>Migrate/update required certificates</li>
+<li>Make an initial copy of the mailstores to the new server using rsync</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">rsync -avz --stats ~plop/Maildir -e ssh plop@new.server.tld:
+</code></pre></div><ul>
+<li>Validates that imap/dovecot is working as expected</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">openssl s_client -connect new.server.tld:993
+a01 login plop the_PassWord
+a02 SELECT INBOX
+a03 <span class="nb">logout</span>
+</code></pre></div><ul>
+<li>
+<p>Copy spamassassin conf (global/local) to new server (and review it)</p>
+</li>
+<li>
+<p>Copy procmailconf to new server (and review it)</p>
+</li>
+<li>
+<p>Copy fetchmail conf (global/local) to new server (and review it)</p>
+</li>
+<li>
+<p>Install postgresql on new server</p>
+</li>
+<li>
+<p>Migrate roundcube postgres database/user</p>
+<ul>
+<li>Database dump have to be updated as postgres user name is different</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">sed -i <span class="s1">&#39;s/pgsql/postgres/g&#39;</span> roundcube.sql
+</code></pre></div><ul>
+<li>
+<p>Install roundcube on new server</p>
+</li>
+<li>
+<p>Update roundcube conf</p>
+</li>
+<li>
+<p>Validate that roundcube is working as expected</p>
+</li>
+<li>
+<p>Wait at least a week to ensure that DNS will be up-to-date with new MX (and
+check that you have a small DNS TTL)</p>
+</li>
+<li>
+<p>Update DNS entries for SPF</p>
+</li>
+</ul>
+<h2 id="final-step---including-small-downtime">Final step - including small downtime</h2>
+<ul>
+<li>Stops email fetching on old server</li>
+<li>Stops postfix on old server</li>
+<li>Stops dovecot on old server</li>
+<li>Stops roundcube vhost on old server</li>
+<li>Make an incremental copy of the mailstores, deleting no more present emails using rsync</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">rsync -avz --delete-after --stats ~plop/Maildir -e ssh plop@new.server.tld:
+</code></pre></div><ul>
+<li>Configure postfix on new server:
+<ul>
+<li>disable relaying to old server</li>
+<li>fix mydestination</li>
+</ul>
+</li>
+<li>Switch IPs (or hostnames if not possible) to new server</li>
+<li>Update required hostnames in new server</li>
+<li>Update roundcube postgres database</li>
+<li>Enable email fetching on new server</li>
+<li>Configure postfix on old server to relay mails to new server</li>
+<li>Clean old server</li>
+<li>Clean DNS conf</li>
+</ul>
+<p>No emails should be lost as if the server is not available, the contacting
+servers should hold and resend the mails.</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Creating Vagrant base boxes</title>
+			<link>https://blog.bapt.name/2014/01/17/creating-vagrant-base-boxes/</link>
+			<pubDate>Fri, 17 Jan 2014 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2014/01/17/creating-vagrant-base-boxes/</guid>
+			<description>Create a VM inside VirtualBox  No usb No audio One dynamic disk (10GiB) 512 MiB of RAM One vcpu One network card in NAT mode  Install the base system, as minimal as possible Scientific Linux 5  Retrieve ISOs CD 1 and 2  wget http://ftp1.scientificlinux.org/linux/scientific/5x/iso/x86_64/cd/SL.510.110513.CD.x86_64.disc{1,2}.iso  Boot CD Use basic video driver installation Use default configuration  except:  DHCP for ipv6 Deselct every packages sets     Use vagrant as root password  Scientific Linux 6  Retrieve netinstall ISO CD  wget http://ftp.</description>
+			<content type="html"><![CDATA[<h2 id="create-a-vm-inside-virtualbox">Create a VM inside VirtualBox</h2>
+<ul>
+<li>No usb</li>
+<li>No audio</li>
+<li>One dynamic disk (10GiB)</li>
+<li>512 MiB of RAM</li>
+<li>One vcpu</li>
+<li>One network card in NAT mode</li>
+</ul>
+<h2 id="install-the-base-system-as-minimal-as-possible">Install the base system, as minimal as possible</h2>
+<h3 id="scientific-linux-5">Scientific Linux 5</h3>
+<ul>
+<li>Retrieve ISOs CD 1 and 2</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wget http://ftp1.scientificlinux.org/linux/scientific/5x/iso/x86_64/cd/SL.510.110513.CD.x86_64.disc<span class="o">{</span>1,2<span class="o">}</span>.iso
+</code></pre></div><ul>
+<li>Boot CD</li>
+<li>Use basic video driver installation</li>
+<li>Use default configuration
+<ul>
+<li>except:
+<ul>
+<li>DHCP for ipv6</li>
+<li>Deselct every packages sets</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Use vagrant as root password</li>
+</ul>
+<h3 id="scientific-linux-6">Scientific Linux 6</h3>
+<ul>
+<li>Retrieve netinstall ISO CD</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wget http://ftp.scientificlinux.org/linux/scientific/6x/x86_64/iso/SL-64-x86_64-2013-03-18-boot.iso
+</code></pre></div><ul>
+<li>Boot CD</li>
+<li>Use network install URL:</li>
+<li>Use default configuration</li>
+<li>Use vagrant as root password</li>
+</ul>
+<p>Debian 7: retrieve netinstall ISO CD</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wget http://cdimage.debian.org/debian-cd/7.3.0/amd64/iso-cd/debian-7.3.0-amd64-netinst.iso
+</code></pre></div><h2 id="system-configuration">System configuration</h2>
+<h3 id="scientific-linux-56">Scientific Linux 5/6</h3>
+<ul>
+<li>Update system and reboot if kernel was updated</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">yum clean all <span class="o">&amp;&amp;</span> yum update -y
+reboot
+</code></pre></div><ul>
+<li>Add a vagrant user with vagrant as password</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">adduser vagrant
+passd vagrant
+</code></pre></div><ul>
+<li>Configure password-less sudo for vagrant user</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">visudo
+Default:vagrant !requiretty
+vagrant <span class="nv">ALL</span><span class="o">=(</span>ALL<span class="o">)</span> NOPASSWD: ALL
+</code></pre></div><ul>
+<li>Configure ssh server</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">sed -i <span class="s1">&#39;s/^#UseDNS yes/UseDNS no/&#39;</span> /etc/ssh/sshd_config
+</code></pre></div><ul>
+<li>Configure ssh authorized_keys for vagrant user</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mkdir ~vagrant/.ssh
+curl -o ~/vagrant/.ssh/authorized_keys <span class="se">\
+</span><span class="se"></span>  https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub
+chmod <span class="m">0700</span> ~vagrant/.ssh
+chmod <span class="m">0600</span> ~vagrant/.ssh/authorized_keys
+chown -R vagrant:vagrant ~vagrant/.ssh
+</code></pre></div><h3 id="scientific-linux-6-1">Scientific Linux 6</h3>
+<p>Minimal SL6 install does not install acpid nor perl</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">yum install -y acpid perl
+service acpid start
+</code></pre></div><h2 id="virtualbox-additions-installation">VirtualBox Additions installation</h2>
+<h3 id="scientific-linux-56-1">Scientific Linux 5/6</h3>
+<ul>
+<li>Insert Guest additions CD image using VirtualBox device menu</li>
+<li>Install required software for build the VirtualBox additions</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">yum install -y gcc make kernel-devel
+</code></pre></div><ul>
+<li>Build and install VirtualBox additions</li>
+</ul>
+<p>Error about OpenGL or Window System drivers are &ldquo;normal&rdquo;.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mount /dev/cdrom /mnt
+sh /mnt/VBoxLinuxAdditions.run
+umount /mnt
+</code></pre></div><h2 id="cleaning-image">Cleaning image</h2>
+<h3 id="scientific-linux-56-2">Scientific Linux 5/6</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">yum clean all
+: &gt; /var/log/messages
+: &gt; /var/log/secure
+: &gt; ~/.bash_history
+<span class="nb">kill</span> -9 <span class="nv">$$</span>
+</code></pre></div><p>ACPI shutdown VM using VirtualBox Machine menu.</p>
+<h2 id="packing-the-boxes">Packing the boxes</h2>
+<h3 id="scientific-linux-5-1">Scientific Linux 5</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">vagrant package --output sl5-64-VB436-nocm.box --base scientificlinux5
+vagrant package --output sl6-64-VB436-nocm.box --base scientificlinux6
+</code></pre></div><h2 id="testing-the-boxes">Testing the boxes</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">vagrant box add sl5-64-nocm sl5-64-VB436-nocm.box
+vagrant box add sl6-64-nocm sl6-64-VB436-nocm.box
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mkdir ~/sl5-64-nocm-tests <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="nv">$_</span>
+vagrant init sl5-64-nocm
+vagrant up
+vagrant ssh
+ping -c <span class="m">3</span> gnu.org
+sudo -s
+<span class="nb">exit</span>
+<span class="nb">exit</span>
+vagrant destroy -f
+<span class="nb">cd</span> ..
+rm -rf ~/sl5-64-nocm-tests
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mkdir ~/sl6-64-nocm-tests <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="nv">$_</span>
+vagrant init sl6-64-nocm
+vagrant up
+vagrant ssh
+ping -c <span class="m">3</span> gnu.org
+sudo -s
+<span class="nb">exit</span>
+<span class="nb">exit</span>
+vagrant destroy -f
+<span class="nb">cd</span> ..
+rm -rf ~/sl6-64-nocm-tests
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>Node-less puppet setup using Hiera</title>
+			<link>https://blog.bapt.name/2013/12/11/node-less-puppet-setup-using-hiera/</link>
+			<pubDate>Wed, 11 Dec 2013 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2013/12/11/node-less-puppet-setup-using-hiera/</guid>
+			<description>Why? Following a big puppet 2.7 =&amp;gt; 3.3 space jump (it took quite some times to test/setup/adapt everything) I am trying to get a cleaner/saner puppet usage to avoid errors, duplication (allowing to easily override some conf for a specific deployment site at some specific location) and to avoid slapping my lazyness with a truit.
+So I crawled a bit the web, and read a lot of different posts/bugs/idas/rants, and did not find the golden-wonderfull-definitive set-up guide, so here are the things that are on the way:</description>
+			<content type="html"><![CDATA[<h2 id="why">Why?</h2>
+<p>Following a big puppet 2.7 =&gt; 3.3 space jump (it took quite some times
+to test/setup/adapt everything) I am trying to get a cleaner/saner
+puppet usage to avoid errors, duplication (allowing to easily override
+some conf for a specific deployment site at some specific location) and
+to avoid slapping my lazyness with a truit.</p>
+<p>So I crawled a bit the web, and read a lot of different
+posts/bugs/idas/rants, and did not find the golden-wonderfull-definitive
+set-up guide, so here are the things that are on the way:</p>
+<ul>
+<li>Use hiera for storing the nodes configuration</li>
+<li>Assign classes using hiera (node-less setup?)</li>
+<li>Create roles and profiles modules to allow to encapsulate contents not
+configurable using hiera</li>
+</ul>
+<h2 id="how">How?</h2>
+<h3 id="hiera-base-setup">Hiera base setup</h3>
+<p>Nothing to fancy here as shown in the hiera.yaml file, just an
+environment-dependent datadir and a first draft of the hierarchy that
+will be used.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">+++</span><span class="w">
+</span><span class="w"></span><span class="nt">:backends</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="l">json</span><span class="w">
+</span><span class="w"></span><span class="nt">:json</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">:datadir</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/puppet/environments/%{::environment}/hieradata/</span><span class="w">
+</span><span class="w"></span><span class="nt">:hierarchy</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::fqdn}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::company_role}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::company_location}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::virtual}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::operatingsystem}-${lsbdistrelease}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::operatingsystem}-${lsbmajdistrelease}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::operatingsystem}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="s2">&#34;%{::osfamily}&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="l">common</span><span class="w">
+</span><span class="w"></span><span class="c"># vim: set ft=yaml et smarttab sw=2 ts=2 sts=2:</span><span class="w">
+</span></code></pre></div><h3 id="custom-facts-for-hiera">Custom facts for hiera</h3>
+<p>Here two hiera data sources are meant to be able to easily configure a
+node according to its location or role. (location meaning more or
+less a more or less physical location with some specific network
+configuration or other specific rules/requirements)</p>
+<p>In order to be able to assign the role and location, custom facts were
+added (company_role and company_location), based on the content of a
+file  (/etc/company.conf) that have to be available on the server. (see
+XXX for more)</p>
+<p><code>/etc/company.conf</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">role</span><span class="o">=</span>puppet
+<span class="nv">location</span><span class="o">=</span>ki
+</code></pre></div><p><code>dist/site/lib/facter/gnbila-facts.rb</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;facter&#39;</span>
+
+<span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="s1">&#39;/etc/company.conf&#39;</span><span class="p">)</span>
+  <span class="no">File</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="s1">&#39;/etc/company.conf&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="k">if</span> <span class="n">line</span> <span class="o">=~</span> <span class="sr">/^(.+)=(.+)$/</span>
+      <span class="n">varname</span> <span class="o">=</span> <span class="s2">&#34;company&#34;</span> <span class="o">+</span> <span class="vg">$1</span><span class="o">.</span><span class="n">strip</span>
+      <span class="n">value</span> <span class="o">=</span> <span class="vg">$2</span><span class="o">.</span><span class="n">strip</span>
+
+      <span class="no">Facter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span> <span class="k">do</span>
+        <span class="n">setcode</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+<span class="c1"># vim: set expandtab smarttab shiftwidth=2 tabstop=2 softtabstop=2 nocindent noautoindent:</span>
+</code></pre></div><h3 id="assigning-class-to-nodes-using-hiera">Assigning class to nodes using hiera</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;classes&#34;</span> <span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&#34;unix&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;skel&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;requiredsoftware&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;pamldap&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;git&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;liquidprompt&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;ruby&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;ruby::dev&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;postfix&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;ntp&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;sudo&#34;</span>
+  <span class="p">],</span>
+
+  <span class="nt">&#34;ntp::server&#34;</span> <span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&#34;0.fr.pool.ntp.org&#34;</span><span class="p">,</span>
+      <span class="s2">&#34;1.fr.pool.ntp.org&#34;</span><span class="p">,</span>
+      <span class="s2">&#34;2.fr.pool.ntp.org&#34;</span>
+  <span class="p">],</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="c1"># Load classes from hiera conf merging all classes for inclusion</span>
+<span class="n">hiera_include</span><span class="p">(</span><span class="s1">&#39;classes&#39;</span><span class="p">)</span>
+</code></pre></div><h3 id="assigning-defines-to-nodes-using-hiera">Assigning defines to nodes using hiera</h3>
+<p>Defines parameters are stored in a hash, the key is the resource
+title and the value is a hash of define parameters.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json">  <span class="s2">&#34;rsyslog_configs&#34;</span> <span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&#34;iptables.conf&#34;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;ensure&#34;</span> <span class="p">:</span> <span class="s2">&#34;present&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;source&#34;</span> <span class="p">:</span> <span class="s2">&#34;puppet:///modules/site/rsyslog/rsyslog.d/iptables.conf&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;puppet-agent.conf&#34;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;ensure&#34;</span> <span class="p">:</span> <span class="s2">&#34;present&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;source&#34;</span> <span class="p">:</span> <span class="s2">&#34;puppet:///modules/site/rsyslog/rsyslog.d/puppet-agent.conf&#34;</span>
+      <span class="p">},</span>
+  <span class="p">}</span><span class="err">,</span>
+</code></pre></div><p>Defines have to be instanciated calling create_resource with the
+retrieved define configuration hash.</p>
+<p><code>manifests.y/site.pp</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="n">node</span> <span class="n">default</span> <span class="p">{</span>
+  <span class="c1"># Load classes from hiera conf merging all classes for inclusion</span>
+  <span class="n">hiera_include</span><span class="p">(</span><span class="s1">&#39;classes&#39;</span><span class="p">)</span>
+
+  <span class="c1"># Retrieve rsyslog configurations if any</span>
+  <span class="vg">$rsyslog_configs</span> <span class="o">=</span> <span class="n">hiera_hash</span><span class="p">(</span><span class="s1">&#39;rsyslog_configs&#39;</span><span class="p">,</span> <span class="p">{})</span>
+  <span class="n">create_resources</span><span class="p">(</span><span class="s1">&#39;rsyslog::config&#39;</span><span class="p">,</span> <span class="vg">$rsyslog_configs</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>Puppet tests using Vagrant</title>
+			<link>https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/</link>
+			<pubDate>Tue, 10 Dec 2013 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/</guid>
+			<description>XXX Work in progress.
+Intro Read first
+ http://www.example42.com/?q=Example42%20Puppet%20Playground http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/ http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/ http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent http://java.dzone.com/articles/test-puppet-config-existing https://github.com/garethr/puppetmaster-vagrant  Prerequisites  git VirtualBox Vagrant  yaourt -S git yaourt -S virtualbox virtualbox-guest-iso yaourt -S vagrant VMs list  One puppet master running Debian 7 64bits One puppet client running Debian 7 64bits One puppet client running Scientific Linux 5.x 64 bits One puppet client running Scientific Linux 6.x 64 bits One puppet client running CentOS 6.</description>
+			<content type="html"><![CDATA[<p>XXX Work in progress.</p>
+<h2 id="intro">Intro</h2>
+<p>Read first</p>
+<ul>
+<li><a href="http://www.example42.com/?q=Example42%20Puppet%20Playground">http://www.example42.com/?q=Example42%20Puppet%20Playground</a></li>
+<li><a href="http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/">http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/</a></li>
+<li><a href="http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/">http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/</a></li>
+<li><a href="http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/">http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/</a></li>
+<li><a href="http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/">http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/</a></li>
+<li><a href="http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/">http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/</a></li>
+<li><a href="http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent">http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent</a></li>
+<li><a href="http://java.dzone.com/articles/test-puppet-config-existing">http://java.dzone.com/articles/test-puppet-config-existing</a></li>
+<li><a href="https://github.com/garethr/puppetmaster-vagrant">https://github.com/garethr/puppetmaster-vagrant</a></li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><a href="http://git-scm.com/">git</a></li>
+<li><a href="https://www.virtualbox.org/">VirtualBox</a></li>
+<li><a href="http://www.vagrantup.com/">Vagrant</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">yaourt -S git
+yaourt -S virtualbox virtualbox-guest-iso
+yaourt -S vagrant
+</code></pre></div><h2 id="vms-list">VMs list</h2>
+<ul>
+<li>One puppet master running Debian 7 64bits</li>
+<li>One puppet client running Debian 7 64bits</li>
+<li>One puppet client running Scientific Linux 5.x 64 bits</li>
+<li>One puppet client running Scientific Linux 6.x 64 bits</li>
+<li>One puppet client running CentOS 6.x 64 bits</li>
+</ul>
+<h2 id="planned-workflow">Planned workflow</h2>
+<h2 id="boxes-urls">Boxes URLs</h2>
+<h3 id="boxes-repositories">Boxes repositories</h3>
+<ul>
+<li><a href="http://puppet-vagrant-boxes.puppetlabs.com/">http://puppet-vagrant-boxes.puppetlabs.com/</a></li>
+<li><a href="http://www.vagrantbox.es/">http://www.vagrantbox.es/</a></li>
+</ul>
+<h3 id="boxes-list">Boxes list</h3>
+<ul>
+<li>Debian 7 64 bits - <a href="http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box">http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box</a></li>
+<li>Scientific Linux 5.x 64 bits -</li>
+<li>Scientific Linux 6.x 64 bits -  <a href="http://lyte.id.au/vagrant/sl6-64-lyte.box">http://lyte.id.au/vagrant/sl6-64-lyte.box</a></li>
+<li>CentOS 6.x 64 bits - <a href="http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box">http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box</a></li>
+</ul>
+<h2 id="box-installation">Box installation</h2>
+<p>Box installation will take some time as the boxes have to be downloaded locally.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">vagrant box add debian7-64 http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box
+vagrant box add sl6-64 http://lyte.id.au/vagrant/sl6-64-lyte.box
+vagrant box add centos6-64 http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box
+</code></pre></div><h2 id="vagrant-configuration">Vagrant configuration</h2>
+<p>Puppet will be boostraped using a small shell script</p>
+<p><code>shell/base.sh</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="cp">#!/bin/sh
+</span><span class="cp"></span>
+<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>id -u<span class="k">)</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s1">&#39;This script must be run as root.&#39;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+  <span class="nb">exit</span> <span class="m">1</span>
+<span class="k">fi</span>
+
+<span class="k">if</span> which puppet &gt; /dev/null 2&gt;<span class="p">&amp;</span>1<span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s1">&#39;Puppet is already installed&#39;</span>
+  <span class="nb">exit</span> <span class="m">0</span>
+<span class="k">fi</span>
+
+<span class="c1"># Add puppetlabs repo definitions</span>
+<span class="nb">echo</span> <span class="s1">&#39;deb http://apt.puppetlabs.com wheezy main&#39;</span> &gt; /etc/apt/sources.list.d/puppetlabs.list
+<span class="nb">echo</span> <span class="s1">&#39;deb http://apt.puppetlabs.com wheezy dependencies&#39;</span> &gt; /etc/apt/sources.list.d/puppetlabs-dependencies.list
+
+<span class="c1"># Add puppetlabs repo key</span>
+apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30
+
+<span class="c1"># Update packages list</span>
+aptitude update
+
+<span class="c1"># Upgrade system</span>
+<span class="c1"># Not working yet due to debconf wanting input</span>
+<span class="c1">#aptitude -V -y upgrade</span>
+<span class="c1">#aptitude -V -y dist-upgrade</span>
+
+<span class="c1"># Install puppet</span>
+aptitude -y install puppet
+<span class="nb">echo</span> <span class="s1">&#39;Puppet successfully installed&#39;</span>
+</code></pre></div><p>Then initial role will be set using another shell script</p>
+<p><code>shell/role.sh</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="cp">#!/bin/sh
+</span><span class="cp"></span>
+<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>hostname<span class="k">)</span> <span class="o">=</span> <span class="s1">&#39;puppet&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s1">&#39;role=puppetmaster&#39;</span> &gt;&gt; /etc/company.conf
+<span class="k">fi</span>
+<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>hostname<span class="k">)</span> <span class="o">=</span> <span class="s1">&#39;client&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s1">&#39;role=puppet&#39;</span> &gt;&gt; /etc/company.conf
+<span class="k">fi</span>
+</code></pre></div><p>And the puppetmaster is boostraped using the puppet apply provider.
+The client will get its configuration from the puppetmaster using the
+puppet agent provider.</p>
+<p>Two directories from the host are made available to the guest, they
+contain the puppet modules that will be used for the puppetmaster
+bootstrap:</p>
+<ul>
+<li>Local puppet modules are available in the relatvie ../../dist
+directory</li>
+<li>A local copy of the remote puppet modules managed using the Puppetfile
+is made using r10k (using a symbolicaly linked Puppetfile)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">gem install r10k
+r10k -v INFO puppetfile install
+</code></pre></div><p><code>Vagrantfile</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="c1"># -*- mode: ruby -*-</span>
+<span class="c1"># vi: set ft=ruby :</span>
+<span class="c1"># Vagrantfile API/syntax version. Don&#39;t touch unless you know what you&#39;re doing!</span>
+<span class="no">VAGRANTFILE_API_VERSION</span> <span class="o">=</span> <span class="s2">&#34;2&#34;</span>
+
+<span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="no">VAGRANTFILE_API_VERSION</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+
+  <span class="c1"># Every Vagrant virtual environment requires a box to build off of.</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&#34;debian7-64-nocm&#34;</span>
+
+  <span class="c1"># The url from where the &#39;config.vm.box&#39; box will be fetched if it</span>
+  <span class="c1"># doesn&#39;t already exist on the user&#39;s system.</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box_url</span> <span class="o">=</span> <span class="s2">&#34;http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box&#34;</span>
+
+  <span class="c1"># Setup the Puppet master</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="ss">:master</span> <span class="k">do</span> <span class="o">|</span><span class="n">master</span><span class="o">|</span>
+    <span class="c1"># Configure memory</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="ss">:virtualbox</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+      <span class="n">vb</span><span class="o">.</span><span class="n">customize</span> <span class="o">[</span><span class="s2">&#34;modifyvm&#34;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">&#34;--memory&#34;</span><span class="p">,</span> <span class="s2">&#34;1024&#34;</span><span class="o">]</span>
+    <span class="k">end</span>
+    <span class="c1"># Set hostname - role will be set based onto it</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&#34;puppet.local&#34;</span>
+    <span class="c1"># Shell provisionner for bootstrapping puppet agent</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;shell/base.sh&#34;</span>
+    <span class="c1"># Shell provisionner for bootstrapping gnubila conf</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;shell/role.sh&#34;</span>
+
+    <span class="c1"># Share puppet develop branch as puppet production folder</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span>  <span class="s2">&#34;../../../puppet&#34;</span><span class="p">,</span> <span class="s2">&#34;/puppet&#34;</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span>  <span class="s2">&#34;../../hieradata&#34;</span><span class="p">,</span> <span class="s2">&#34;/vagrant/hieradata&#34;</span>
+
+    <span class="c1"># Create a puppetmaster using puppet apply</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="ss">:puppet</span> <span class="k">do</span> <span class="o">|</span><span class="n">puppet</span><span class="o">|</span>
+      <span class="c1"># Path on host to puppet manifests</span>
+      <span class="n">puppet</span><span class="o">.</span><span class="n">manifests_path</span> <span class="o">=</span> <span class="s2">&#34;../../manifests&#34;</span>
+      <span class="c1"># Relative path to the default manifest</span>
+      <span class="c1"># Path on host to puppet modules</span>
+      <span class="n">puppet</span><span class="o">.</span><span class="n">module_path</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&#34;../../dist&#34;</span><span class="p">,</span> <span class="s2">&#34;modules&#34;</span><span class="o">]</span>
+      <span class="n">puppet</span><span class="o">.</span><span class="n">manifest_file</span>  <span class="o">=</span> <span class="s2">&#34;site.pp&#34;</span>
+      <span class="c1"># Path on host to hiera.yaml</span>
+      <span class="n">puppet</span><span class="o">.</span><span class="n">hiera_config_path</span> <span class="o">=</span> <span class="s2">&#34;puppet/hiera.yaml&#34;</span>
+      <span class="c1"># Working directory on the guest</span>
+      <span class="n">puppet</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="s1">&#39;/vagrant&#39;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="ss">:client</span> <span class="k">do</span> <span class="o">|</span><span class="n">client</span><span class="o">|</span>
+    <span class="c1"># Configure memory</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="ss">:virtualbox</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+      <span class="n">vb</span><span class="o">.</span><span class="n">customize</span> <span class="o">[</span><span class="s2">&#34;modifyvm&#34;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">&#34;--memory&#34;</span><span class="p">,</span> <span class="s2">&#34;1024&#34;</span><span class="o">]</span>
+    <span class="k">end</span>
+    <span class="c1"># Set hostname - role will be set based onto it</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&#34;client.local&#34;</span>
+    <span class="c1"># Shell provisionner for bootstrapping puppet agent</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;base.sh&#34;</span>
+    <span class="c1"># Shell provisionner for bootstrapping gnubila conf</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;role.sh&#34;</span>
+    <span class="c1"># TODO Configure server using puppet agent against the master vm</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div><p>A copy of the hiera.yaml has been made with a custom datadir
+configuration to allow puppet apply to find the conf exposed into the vm
+by Vagrant.</p>
+<h2 id="go-play">Go play!</h2>
+<p>The boxes are started using</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">vagrant up
+</code></pre></div><ul>
+<li>Connect using ssh</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">vagrant ssh master
+vagrant ssh client
+</code></pre></div><h2 id="later">Later</h2>
+<h3 id="creating-custom-boxes-using-veewee">Creating custom boxes using veewee</h3>
+<ul>
+<li><a href="https://github.com/jedi4ever/veewee">https://github.com/jedi4ever/veewee</a></li>
+<li><a href="https://github.com/puppetlabs/puppet-vagrant-boxes">https://github.com/puppetlabs/puppet-vagrant-boxes</a></li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Blog up your hands</title>
+			<link>https://blog.bapt.name/2013/10/14/blog-up-your-hands/</link>
+			<pubDate>Mon, 14 Oct 2013 00:00:00 +0000</pubDate>
+			
+			<guid>https://blog.bapt.name/2013/10/14/blog-up-your-hands/</guid>
+			<description>Here we go again! Let&amp;rsquo;s start again with a new blog&amp;hellip; Not coded by myself so perhaps posts will come to life :)</description>
+			<content type="html"><![CDATA[<h2 id="here-we-go-again">Here we go again!</h2>
+<p>Let&rsquo;s start again with a new blog&hellip;
+Not coded by myself so perhaps posts will come to life :)</p>
+]]></content>
+		</item>
+		
+	</channel>
+</rss>

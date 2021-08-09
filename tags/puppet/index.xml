@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>puppet on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/puppet/</link>
+    <description>Recent content in puppet on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Thu, 10 Apr 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/puppet/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Regenerating Puppet certificates</title>
+      <link>https://blog.bapt.name/2014/04/10/regenerating-puppet-certificates/</link>
+      <pubDate>Thu, 10 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/04/10/regenerating-puppet-certificates/</guid>
+      <description>Bleeding Heart Following the Heartbleed bug and as all Debian stable (wheezy for the time being) are affected and as the puppetmaster is running on debian it is a good idea to regenerate the puppet certificates, here is a quick how-to when using puppet with passenger on debian wheezy.
+Please refer to the official documentation.
+On the puppet master service apache2 stop cp -r /var/lib/puppet/ssl ~/puppet-ssl-backup rm -rf /var/lib/puppet/ssl/* # Kill the master once the CA and certs have been generated using ctrl+c puppet master --no-daemonize --verbose service apache2 start Now a new CA has been created in /var/lib/puppet/ssl, and a cert for the master has been generated and signed, and all the existing agent certificates are now unknown to the CA.</description>
+    </item>
+    
+    <item>
+      <title>Starting to play with Puppet Enterprise</title>
+      <link>https://blog.bapt.name/2014/02/14/starting-to-play-with-puppet-enterprise/</link>
+      <pubDate>Fri, 14 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/02/14/starting-to-play-with-puppet-enterprise/</guid>
+      <description>Why Puppet Enterprise? @work we are using puppet to manage our servers, currently we are using Puppet Open Source edition with great satisfaction.
+Being curious I always wanted to try the Puppet Enterprise edition, which is no more free, following my server migration (moving from a FreeBSD-based OVH dedicated server to a less expensive Kimsufi) I have to setup a new way of managing my VMs, after some quick and opinionated reading, I dropped the idea to use Chief and after a bit of additional readings I skipped Ansible too as I like some puppet concepts like exported/collected resources allowing to setup a dynamic environment.</description>
+    </item>
+    
+    <item>
+      <title>Node-less puppet setup using Hiera</title>
+      <link>https://blog.bapt.name/2013/12/11/node-less-puppet-setup-using-hiera/</link>
+      <pubDate>Wed, 11 Dec 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2013/12/11/node-less-puppet-setup-using-hiera/</guid>
+      <description>Why? Following a big puppet 2.7 =&amp;gt; 3.3 space jump (it took quite some times to test/setup/adapt everything) I am trying to get a cleaner/saner puppet usage to avoid errors, duplication (allowing to easily override some conf for a specific deployment site at some specific location) and to avoid slapping my lazyness with a truit.
+So I crawled a bit the web, and read a lot of different posts/bugs/idas/rants, and did not find the golden-wonderfull-definitive set-up guide, so here are the things that are on the way:</description>
+    </item>
+    
+    <item>
+      <title>Puppet tests using Vagrant</title>
+      <link>https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/</link>
+      <pubDate>Tue, 10 Dec 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/</guid>
+      <description>XXX Work in progress.
+Intro Read first
+ http://www.example42.com/?q=Example42%20Puppet%20Playground http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/ http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/ http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent http://java.dzone.com/articles/test-puppet-config-existing https://github.com/garethr/puppetmaster-vagrant  Prerequisites  git VirtualBox Vagrant  yaourt -S git yaourt -S virtualbox virtualbox-guest-iso yaourt -S vagrant VMs list  One puppet master running Debian 7 64bits One puppet client running Debian 7 64bits One puppet client running Scientific Linux 5.x 64 bits One puppet client running Scientific Linux 6.x 64 bits One puppet client running CentOS 6.</description>
+    </item>
+    
+  </channel>
+</rss>
