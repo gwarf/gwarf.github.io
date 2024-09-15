@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mail on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/mail/</link>
+    <description>Recent content in mail on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Sat, 18 Jan 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/mail/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mail server migration</title>
+      <link>https://blog.bapt.name/2014/01/18/mail-server-migration/</link>
+      <pubDate>Sat, 18 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/01/18/mail-server-migration/</guid>
+      <description>Goal Migrating a mail server from one server (FreeBSD physical server) to another one (Debian virtual machine) without loosing mails.
+Mail server Retrieving mails from other email providers  fetchmail (cron)  crontab -e */3 * * * * $HOME/bin/getmymailnow &amp;gt; /dev/null ~/bin/getmymailnow:
+#!/bin/sh LOCKFILE=&amp;#34;$0.lock&amp;#34; PATH=&amp;#34;/bin:/usr/bin&amp;#34; if [ -f &amp;#34;$LOCKFILE&amp;#34; ]; then PID=$(cat &amp;#34;$LOCKFILE&amp;#34;) if ! ps $PID 2&amp;gt; /dev/null; then echo &amp;#34;Ignoring stalled lock file&amp;#34; &amp;gt;&amp;amp;2 else echo &amp;#34;Script already running (PID=$PID)&amp;#34; &amp;gt;&amp;amp;2 exit 1 fi fi fetchmail -a -s -m &amp;#34;procmail -d %T&amp;#34; 2&amp;gt;&amp;amp;1 echo $!</description>
+    </item>
+    
+  </channel>
+</rss>
