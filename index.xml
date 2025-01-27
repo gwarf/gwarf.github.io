@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/</link>
+    <description>Recent content on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Sun, 15 Sep 2024 11:35:41 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Maintaining Freebsd Ports</title>
+      <link>https://blog.bapt.name/2024/09/15/maintaining-freebsd-ports/</link>
+      <pubDate>Sun, 15 Sep 2024 11:35:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2024/09/15/maintaining-freebsd-ports/</guid>
+      <description>Post covering how to maintain FreeBSD ports.
+ My requirements – wishes  Building in a clean environment with isolation from the host system Being able to work as a non-privileged user as much as possible Having clear and simple workflow to:  Create new ports Update existing ports    Tooling  See Building FreeBSD ports.
+ Setting the tools up I will make use of doas to run the commands as root.</description>
+    </item>
+    
+    <item>
+      <title>Using Caddy to Serve Poudriere</title>
+      <link>https://blog.bapt.name/2024/08/31/using-caddy-to-serve-poudriere/</link>
+      <pubDate>Sat, 31 Aug 2024 19:52:09 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2024/08/31/using-caddy-to-serve-poudriere/</guid>
+      <description>Follow up to the post on building FreeBSD ports.
+ Poudriere generates HTML content that can be served, and allowing to have an overview of what is currently happening. It&amp;rsquo;s also handy for digging into logs.
+Poudriere comes with some web server templates that can be used, see /usr/local/share/examples/poudriere/ one of them is for caddy and allows having a very quick and simple setup, with even some https on localhost.</description>
+    </item>
+    
+    <item>
+      <title>Building Freebsd Ports</title>
+      <link>https://blog.bapt.name/2024/08/31/building-freebsd-ports/</link>
+      <pubDate>Sat, 31 Aug 2024 15:03:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2024/08/31/building-freebsd-ports/</guid>
+      <description>Post covering how to build FreeBSD ports using poudriere and portshaker.
+ Back to an old platonic love Lately, I had to came back to FreeBSD, and take over maintenance of some services deployed in FreeBSD.
+I&amp;rsquo;ve been an happy FreeBSD years ago, I enjoyed this a lot, the handbook and other documentation are marvelous, many things &amp;ldquo;just works&amp;rdquo;, and I have a beard.
+Long time ago I was also enjoying a very cool FreeBSD setup guide, from iMil.</description>
+    </item>
+    
+    <item>
+      <title>Using Nitrokey Pro and Fido2</title>
+      <link>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</guid>
+      <description>In order to store and protect my credentials and to simplify 2 Factor authentication I&amp;rsquo;ve bought some USB keys from Nitrokey.
+While it may be possible to find more complete or fancy solutions I selected Nitrokey, a German company, as both hardware and software is Open Source and I trust this way more than a black box provided by a company that is asking to get some blind trust.
+For storing and protecting GPG or S/MIME key I&amp;rsquo;ve choosed a Nitrokey Pro 2 USB key.</description>
+    </item>
+    
+    <item>
+      <title>SQM QoS OpenWrt OpenMPTCProuter</title>
+      <link>https://blog.bapt.name/2020/05/20/sqm-qos-openwrt-openmptcprouter/</link>
+      <pubDate>Wed, 20 May 2020 12:50:27 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/05/20/sqm-qos-openwrt-openmptcprouter/</guid>
+      <description>Doing QoS with OpenMPTCProuter I&amp;rsquo;m at the countryside so no fiber/FTTH but only FTTD (Fiber To The DSLAM)&amp;hellip; Being a remote worker I need a quite stable connection, so I&amp;rsquo;m currently using 3 ADSL connections aggregated via OpenMPTCProuter. Thus not only if one link fail it will be transparent but the upload and download links are aggregated, it&amp;rsquo;s not only a failover on the links. Initially I was an OverTheBox user, but that&amp;rsquo;s another story&amp;hellip;</description>
+    </item>
+    
+    <item>
+      <title>Arpspoof Arp Cache Poisoning</title>
+      <link>https://blog.bapt.name/2020/05/02/arpspoof-arp-cache-poisoning/</link>
+      <pubDate>Sat, 02 May 2020 18:19:48 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/05/02/arpspoof-arp-cache-poisoning/</guid>
+      <description>Goal: tricking arp cache to redirect network traffic to us &amp;ldquo;Man in the middle&amp;rdquo;.
+ VM1: 192.168.1.244 VM2: 192.168.1.145 GW: 192.168.1.1  Prerequisites # Enable ip forwarding sudo sh -c &amp;#39;echo 1 &amp;gt; /proc/sys/net/ipv4/ip_forward&amp;#39; # Install arpspoof (part of dsniff) sudo apt install dsniff Listening to traffic between two VMs # Checking arp table on VM1/VM2 allow to check IP/Mac arp -a # Start redirecting traffic from VM1 to VM2 to us sudo arpspoof -i eth0 -t $VM1 $VM2 # Start redirecting traffic from VM2 to VM1 to us sudo arpspoof -i eth0 -t $VM2 $VM1 # Checking arp table on VM1/VM2 allow to check IP/Mac arp -a # Using wireshark will allow to check/follow traffic sudo whireshark Pretending to be the default gateway # Checking arp table allow to check IP/Mac arp -a # Start redirecting traffic from VM1 to VM2 to us sudo arpspoof -i eth0 -t $VM1 $GW # Start redirecting traffic from VM2 to VM1 to us sudo arpspoof -i eth0 -t $GW $VM1 # Using wireshark will allow to check/follow traffic sudo whireshark </description>
+    </item>
+    
+    <item>
+      <title>Archlinux cleaning installed packages groups with Pacman</title>
+      <link>https://blog.bapt.name/2020/05/01/archlinux-cleaning-installed-packages-groups-with-pacman/</link>
+      <pubDate>Fri, 01 May 2020 10:37:52 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/05/01/archlinux-cleaning-installed-packages-groups-with-pacman/</guid>
+      <description>On Archlinux pacman allows to install packages as a group. Cleaning those packages and their dependencies is not as straight forward, but it possible to do cleaning by using a few commands.
+Here let&amp;rsquo;s try to clean plasma stuff (finally I find gnome more straightforward to used, despite being sometimes a bit surprised by the lack of customisation or by some choices.)
+# Check installed packages from groups pacman -Qg # Collect installed list of packages for specific groups pacman -Qgq plasma &amp;gt; plasma.</description>
+    </item>
+    
+    <item>
+      <title>Copy Paste With Vim and Tmux</title>
+      <link>https://blog.bapt.name/2020/04/28/copy-paste-with-vim-and-tmux/</link>
+      <pubDate>Tue, 28 Apr 2020 11:07:46 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/28/copy-paste-with-vim-and-tmux/</guid>
+      <description>Copying between two VIM sessions Using vim + clipboard copy to just get vim content and not all the VIM formatting (line numbers and so on).
+  On MacOS X + and * registers are the same.
+  On GNU/Linux
+ + is the desktop clipboard (usable via ctl-c/x/v) * is the X11 primary selection (usable via mouse selection/middle mouse button)    Select text in VIM</description>
+    </item>
+    
+    <item>
+      <title>Terminal setup ZSH tmux powerlevel10k</title>
+      <link>https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/</link>
+      <pubDate>Sat, 25 Apr 2020 17:51:44 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/</guid>
+      <description>Today I was contacted by a person asking for my terminal setup, after having seen it in a GitHub issue.
+So even if most of my conf is already available in my dotfiles let&amp;rsquo;s share it here too in a more documented way, maybe someone may be interested by this too.
+Obviously it&amp;rsquo;s for ZSH not bash. :P
+Please also be waned that my dotfiles are a work in progress and quite messy/broken, some stuff are also quite obsolete.</description>
+    </item>
+    
+    <item>
+      <title>Monitoring with Sensu</title>
+      <link>https://blog.bapt.name/2020/04/25/monitoring-with-sensu/</link>
+      <pubDate>Sat, 25 Apr 2020 15:56:13 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/25/monitoring-with-sensu/</guid>
+      <description>Some notes taken during a deployment of Sensu with one backend server and some nodes running agents.
+Installing Sensu Follow the official documentation.
+Installing the backend # Add the Sensu repository curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash # Install the sensu-go-backend package sudo yum install sensu-go-backend # Copy the config template from the docs sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml # Start sensu-backend sudo systemctl enable --now sensu-backend # Initialise sudo systemctl status -l sensu-backend export SENSU_BACKEND_CLUSTER_ADMIN_USERNAME=YOUR_USERNAME export SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD=YOUR_PASSWORD sensu-backend init # Check that backend replies curl http://127.</description>
+    </item>
+    
+  </channel>
+</rss>

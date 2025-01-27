@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ports on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/ports/</link>
+    <description>Recent content in ports on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Sun, 15 Sep 2024 11:35:41 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/ports/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Maintaining Freebsd Ports</title>
+      <link>https://blog.bapt.name/2024/09/15/maintaining-freebsd-ports/</link>
+      <pubDate>Sun, 15 Sep 2024 11:35:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2024/09/15/maintaining-freebsd-ports/</guid>
+      <description>Post covering how to maintain FreeBSD ports.
+ My requirements – wishes  Building in a clean environment with isolation from the host system Being able to work as a non-privileged user as much as possible Having clear and simple workflow to:  Create new ports Update existing ports    Tooling  See Building FreeBSD ports.
+ Setting the tools up I will make use of doas to run the commands as root.</description>
+    </item>
+    
+    <item>
+      <title>Building Freebsd Ports</title>
+      <link>https://blog.bapt.name/2024/08/31/building-freebsd-ports/</link>
+      <pubDate>Sat, 31 Aug 2024 15:03:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2024/08/31/building-freebsd-ports/</guid>
+      <description>Post covering how to build FreeBSD ports using poudriere and portshaker.
+ Back to an old platonic love Lately, I had to came back to FreeBSD, and take over maintenance of some services deployed in FreeBSD.
+I&amp;rsquo;ve been an happy FreeBSD years ago, I enjoyed this a lot, the handbook and other documentation are marvelous, many things &amp;ldquo;just works&amp;rdquo;, and I have a beard.
+Long time ago I was also enjoying a very cool FreeBSD setup guide, from iMil.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>archlinux on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/archlinux/</link>
+    <description>Recent content in archlinux on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Thu, 09 Jul 2020 14:36:23 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/archlinux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using Nitrokey Pro and Fido2</title>
+      <link>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</guid>
+      <description>In order to store and protect my credentials and to simplify 2 Factor authentication I&amp;rsquo;ve bought some USB keys from Nitrokey.
+While it may be possible to find more complete or fancy solutions I selected Nitrokey, a German company, as both hardware and software is Open Source and I trust this way more than a black box provided by a company that is asking to get some blind trust.
+For storing and protecting GPG or S/MIME key I&amp;rsquo;ve choosed a Nitrokey Pro 2 USB key.</description>
+    </item>
+    
+    <item>
+      <title>Archlinux cleaning installed packages groups with Pacman</title>
+      <link>https://blog.bapt.name/2020/05/01/archlinux-cleaning-installed-packages-groups-with-pacman/</link>
+      <pubDate>Fri, 01 May 2020 10:37:52 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/05/01/archlinux-cleaning-installed-packages-groups-with-pacman/</guid>
+      <description>On Archlinux pacman allows to install packages as a group. Cleaning those packages and their dependencies is not as straight forward, but it possible to do cleaning by using a few commands.
+Here let&amp;rsquo;s try to clean plasma stuff (finally I find gnome more straightforward to used, despite being sometimes a bit surprised by the lack of customisation or by some choices.)
+# Check installed packages from groups pacman -Qg # Collect installed list of packages for specific groups pacman -Qgq plasma &amp;gt; plasma.</description>
+    </item>
+    
+  </channel>
+</rss>
