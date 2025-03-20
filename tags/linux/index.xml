@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linux on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/linux/</link>
+    <description>Recent content in linux on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Thu, 09 Jul 2020 14:36:23 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using Nitrokey Pro and Fido2</title>
+      <link>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/</guid>
+      <description>In order to store and protect my credentials and to simplify 2 Factor authentication I&amp;rsquo;ve bought some USB keys from Nitrokey.
+While it may be possible to find more complete or fancy solutions I selected Nitrokey, a German company, as both hardware and software is Open Source and I trust this way more than a black box provided by a company that is asking to get some blind trust.
+For storing and protecting GPG or S/MIME key I&amp;rsquo;ve choosed a Nitrokey Pro 2 USB key.</description>
+    </item>
+    
+  </channel>
+</rss>

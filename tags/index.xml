@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/</link>
+    <description>Recent content in Tags on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Sun, 15 Sep 2024 11:35:41 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>freebsd</title>
+      <link>https://blog.bapt.name/tags/freebsd/</link>
+      <pubDate>Sun, 15 Sep 2024 11:35:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/freebsd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>maintainer</title>
+      <link>https://blog.bapt.name/tags/maintainer/</link>
+      <pubDate>Sun, 15 Sep 2024 11:35:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/maintainer/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ports</title>
+      <link>https://blog.bapt.name/tags/ports/</link>
+      <pubDate>Sun, 15 Sep 2024 11:35:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/ports/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorial</title>
+      <link>https://blog.bapt.name/tags/tutorial/</link>
+      <pubDate>Sun, 15 Sep 2024 11:35:41 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/tutorial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>archlinux</title>
+      <link>https://blog.bapt.name/tags/archlinux/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/archlinux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bitwarden</title>
+      <link>https://blog.bapt.name/tags/bitwarden/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/bitwarden/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://blog.bapt.name/tags/linux/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nitrokey</title>
+      <link>https://blog.bapt.name/tags/nitrokey/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/nitrokey/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>security</title>
+      <link>https://blog.bapt.name/tags/security/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/security/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sysadmin</title>
+      <link>https://blog.bapt.name/tags/sysadmin/</link>
+      <pubDate>Thu, 09 Jul 2020 14:36:23 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/tags/sysadmin/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

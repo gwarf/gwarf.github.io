@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Monitoring with Sensu">
+<meta itemprop="description" content="Some notes taken during a deployment of Sensu with one backend server and some nodes running agents.
+Installing Sensu Follow the official documentation.
+Installing the backend # Add the Sensu repository curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash # Install the sensu-go-backend package sudo yum install sensu-go-backend # Copy the config template from the docs sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml # Start sensu-backend sudo systemctl enable --now sensu-backend # Initialise sudo systemctl status -l sensu-backend export SENSU_BACKEND_CLUSTER_ADMIN_USERNAME=YOUR_USERNAME export SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD=YOUR_PASSWORD sensu-backend init # Check that backend replies curl http://127."><meta itemprop="datePublished" content="2020-04-25T15:56:13+02:00" />
+<meta itemprop="dateModified" content="2020-04-25T15:56:13+02:00" />
+<meta itemprop="wordCount" content="835">
+<meta itemprop="keywords" content="sysadmin,monitoring,sensu," /><meta property="og:title" content="Monitoring with Sensu" />
+<meta property="og:description" content="Some notes taken during a deployment of Sensu with one backend server and some nodes running agents.
+Installing Sensu Follow the official documentation.
+Installing the backend # Add the Sensu repository curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash # Install the sensu-go-backend package sudo yum install sensu-go-backend # Copy the config template from the docs sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml # Start sensu-backend sudo systemctl enable --now sensu-backend # Initialise sudo systemctl status -l sensu-backend export SENSU_BACKEND_CLUSTER_ADMIN_USERNAME=YOUR_USERNAME export SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD=YOUR_PASSWORD sensu-backend init # Check that backend replies curl http://127." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2020/04/25/monitoring-with-sensu/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-04-25T15:56:13+02:00" />
+<meta property="article:modified_time" content="2020-04-25T15:56:13+02:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Monitoring with Sensu"/>
+<meta name="twitter:description" content="Some notes taken during a deployment of Sensu with one backend server and some nodes running agents.
+Installing Sensu Follow the official documentation.
+Installing the backend # Add the Sensu repository curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash # Install the sensu-go-backend package sudo yum install sensu-go-backend # Copy the config template from the docs sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml # Start sensu-backend sudo systemctl enable --now sensu-backend # Initialise sudo systemctl status -l sensu-backend export SENSU_BACKEND_CLUSTER_ADMIN_USERNAME=YOUR_USERNAME export SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD=YOUR_PASSWORD sensu-backend init # Check that backend replies curl http://127."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Monitoring with Sensu</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Apr 25, 2020</span></div>
+				<h1>Monitoring with Sensu</h1>
+			</header>
+			<div class="content">
+				<p>Some notes taken during a deployment of Sensu with one backend server and some
+nodes running agents.</p>
+<h2 id="installing-sensu">Installing Sensu<a href="#installing-sensu" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Follow the <a href="https://docs.sensu.io/sensu-go/latest/installation/install-sensu/">official documentation</a>.</p>
+<h3 id="installing-the-backend">Installing the backend<a href="#installing-the-backend" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Add the Sensu repository</span>
+</span></span><span class="line"><span class="cl">curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh <span class="p">|</span> sudo bash
+</span></span><span class="line"><span class="cl"><span class="c1"># Install the sensu-go-backend package</span>
+</span></span><span class="line"><span class="cl">sudo yum install sensu-go-backend
+</span></span><span class="line"><span class="cl"><span class="c1"># Copy the config template from the docs</span>
+</span></span><span class="line"><span class="cl">sudo curl -L https://docs.sensu.io/sensu-go/latest/files/backend.yml -o /etc/sensu/backend.yml
+</span></span><span class="line"><span class="cl"><span class="c1"># Start sensu-backend</span>
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> --now sensu-backend
+</span></span><span class="line"><span class="cl"><span class="c1"># Initialise</span>
+</span></span><span class="line"><span class="cl">sudo systemctl status -l sensu-backend
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">SENSU_BACKEND_CLUSTER_ADMIN_USERNAME</span><span class="o">=</span>YOUR_USERNAME
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD</span><span class="o">=</span>YOUR_PASSWORD
+</span></span><span class="line"><span class="cl">sensu-backend init
+</span></span><span class="line"><span class="cl"><span class="c1"># Check that backend replies</span>
+</span></span><span class="line"><span class="cl">curl http://127.0.0.1:8080/health
+</span></span></code></pre></div><h3 id="installing-the-client">Installing the client<a href="#installing-the-client" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>The client is used to interact with the backend from CLI using <code>sensuctl</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Add the Sensu repository</span>
+</span></span><span class="line"><span class="cl">curl https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh <span class="p">|</span> sudo bash
+</span></span><span class="line"><span class="cl"><span class="c1"># Install the sensu-go-cli package</span>
+</span></span><span class="line"><span class="cl">sudo yum install sensu-go-cli
+</span></span><span class="line"><span class="cl">sensuctl configure -n <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--username <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_USERNAME</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--password <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--namespace default <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--url <span class="s1">&#39;http://127.0.0.1:8080&#39;</span>
+</span></span><span class="line"><span class="cl">sensuctl config view
+</span></span></code></pre></div><h3 id="configure-ca-and-certificates">Configure CA and certificates<a href="#configure-ca-and-certificates" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Follow the <a href="https://docs.sensu.io/sensu-go/latest/guides/generate-certificates/">official documentation</a>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Download cfssl and cfssljson executables and install them in /usr/local/bin:</span>
+</span></span><span class="line"><span class="cl">sudo curl -L https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64 -o /usr/local/bin/cfssl
+</span></span><span class="line"><span class="cl">sudo curl -L https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64 -o /usr/local/bin/cfssljson
+</span></span><span class="line"><span class="cl">sudo chmod +x /usr/local/bin/cfssl*
+</span></span><span class="line"><span class="cl"><span class="c1"># Create /etc/sensu/tls -- does not exist by default</span>
+</span></span><span class="line"><span class="cl">sudo su -
+</span></span><span class="line"><span class="cl">mkdir -p /etc/sensu/tls
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /etc/sensu/tls
+</span></span><span class="line"><span class="cl"><span class="c1"># Create the Certificate Authority</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;{&#34;CN&#34;:&#34;Sensu Test CA&#34;,&#34;key&#34;:{&#34;algo&#34;:&#34;rsa&#34;,&#34;size&#34;:2048}}&#39;</span> <span class="p">|</span> cfssl gencert -initca - <span class="p">|</span> cfssljson -bare ca -
+</span></span><span class="line"><span class="cl"><span class="c1"># Define signing parameters and profiles. Note that agent profile provides the &#34;client auth&#34; usage required for mTLS.</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;{&#34;signing&#34;:{&#34;default&#34;:{&#34;expiry&#34;:&#34;17520h&#34;,&#34;usages&#34;:[&#34;signing&#34;,&#34;key encipherment&#34;,&#34;client auth&#34;]},&#34;profiles&#34;:{&#34;backend&#34;:{&#34;usages&#34;:[&#34;signing&#34;,&#34;key encipherment&#34;,&#34;server auth&#34;],&#34;expiry&#34;:&#34;4320h&#34;},&#34;agent&#34;:{&#34;usages&#34;:[&#34;signing&#34;,&#34;key encipherment&#34;,&#34;client auth&#34;],&#34;expiry&#34;:&#34;4320h&#34;}}}}&#39;</span> &gt; ca-config.json
+</span></span><span class="line"><span class="cl"><span class="c1"># Issue backend certificate</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">ADDRESS</span><span class="o">=</span>localhost,127.0.0.1,<span class="nv">$BACKEND_IP</span>,<span class="nv">$BACKEND_FQDN</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NAME</span><span class="o">=</span><span class="nv">$BACKEND_FQDN</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;{&#34;CN&#34;:&#34;&#39;</span><span class="nv">$NAME</span><span class="s1">&#39;&#34;,&#34;hosts&#34;:[&#34;&#34;],&#34;key&#34;:{&#34;algo&#34;:&#34;rsa&#34;,&#34;size&#34;:2048}}&#39;</span> <span class="p">|</span> cfssl gencert -config<span class="o">=</span>ca-config.json -profile<span class="o">=</span><span class="s2">&#34;backend&#34;</span> -ca<span class="o">=</span>ca.pem -ca-key<span class="o">=</span>ca-key.pem -hostname<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$ADDRESS</span><span class="s2">&#34;</span> - <span class="p">|</span> cfssljson -bare <span class="nv">$NAME</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Issue agents&#39; certificates</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NAME</span><span class="o">=</span><span class="nv">$AGENT_NAME</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;{&#34;CN&#34;:&#34;&#39;</span><span class="nv">$NAME</span><span class="s1">&#39;&#34;,&#34;hosts&#34;:[&#34;&#34;],&#34;key&#34;:{&#34;algo&#34;:&#34;rsa&#34;,&#34;size&#34;:2048}}&#39;</span> <span class="p">|</span> cfssl gencert -config<span class="o">=</span>ca-config.json -ca<span class="o">=</span>ca.pem -ca-key<span class="o">=</span>ca-key.pem -hostname<span class="o">=</span><span class="s2">&#34;&#34;</span> -profile<span class="o">=</span>agent - <span class="p">|</span> cfssljson -bare <span class="nv">$NAME</span>
+</span></span><span class="line"><span class="cl">chown sensu /etc/sensu/tls/*.pem
+</span></span><span class="line"><span class="cl">chmod <span class="m">400</span> /etc/sensu/tls/*.pem
+</span></span><span class="line"><span class="cl">chown root /etc/sensu/tls/ca.pem
+</span></span><span class="line"><span class="cl">chmod <span class="m">644</span> /etc/sensu/tls/ca.pem
+</span></span></code></pre></div><ul>
+<li>Copy agent&rsquo;s certificate and key to <code>/etc/sensu/tls</code> on each agent nodes.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Configuration for mail node</span>
+</span></span><span class="line"><span class="cl">tree /etc/sensu
+</span></span><span class="line"><span class="cl">/etc/sensu
+</span></span><span class="line"><span class="cl">├── agent.yml
+</span></span><span class="line"><span class="cl">└── tls
+</span></span><span class="line"><span class="cl">    ├── ca.pem
+</span></span><span class="line"><span class="cl">    ├── mail-key.pem
+</span></span><span class="line"><span class="cl">    └── mail.pem
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">1</span> directory, <span class="m">4</span> files
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Add Sensu CA to system trust store</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CentOS</span>
+</span></span><span class="line"><span class="cl">chmod <span class="m">644</span> /etc/sensu/tls/ca.pem
+</span></span><span class="line"><span class="cl">chown root /etc/sensu/tls/ca.pem
+</span></span><span class="line"><span class="cl">sudo yum install -y ca-certificates
+</span></span><span class="line"><span class="cl">sudo update-ca-trust force-enable
+</span></span><span class="line"><span class="cl">sudo ln -s /etc/sensu/tls/ca.pem /etc/pki/ca-trust/source/anchors/sensu-ca.pem
+</span></span><span class="line"><span class="cl">sudo update-ca-trust
+</span></span><span class="line"><span class="cl"><span class="c1"># Ubuntu</span>
+</span></span><span class="line"><span class="cl">chmod <span class="m">644</span> /etc/sensu/tls/ca.pem
+</span></span><span class="line"><span class="cl">chown root /etc/sensu/tls/ca.pem
+</span></span><span class="line"><span class="cl">sudo apt-get install ca-certificates -y
+</span></span><span class="line"><span class="cl">sudo ln -sfv /etc/sensu/tls/ca.pem /usr/local/share/ca-certificates/sensu-ca.crt
+</span></span><span class="line"><span class="cl">sudo update-ca-certificates
+</span></span><span class="line"><span class="cl"><span class="c1"># Arch</span>
+</span></span><span class="line"><span class="cl">sudo trust anchor --store /etc/sensu/tls/ca.pem
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  ~ sudo grep -v <span class="s1">&#39;^\(#.*\|\s*\)$&#39;</span> /etc/sensu/backend.yml
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">state-dir: <span class="s2">&#34;/var/lib/sensu/sensu-backend&#34;</span>
+</span></span><span class="line"><span class="cl">log-level: <span class="s2">&#34;debug&#34;</span> <span class="c1"># available log levels: panic, fatal, error, warn, info, debug</span>
+</span></span><span class="line"><span class="cl">api-url: <span class="s2">&#34;https://localhost:8080&#34;</span>
+</span></span><span class="line"><span class="cl">dashboard-cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+</span></span><span class="line"><span class="cl">dashboard-key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+</span></span><span class="line"><span class="cl">dashboard-host: <span class="s2">&#34;[::]&#34;</span> <span class="c1"># listen on all IPv4 and IPv6 addresses</span>
+</span></span><span class="line"><span class="cl">dashboard-port: <span class="m">3000</span>
+</span></span><span class="line"><span class="cl">cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+</span></span><span class="line"><span class="cl">key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+</span></span><span class="line"><span class="cl">trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+</span></span><span class="line"><span class="cl">insecure-skip-tls-verify: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">etcd-advertise-client-urls: <span class="s2">&#34;https://localhost:2379&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-listen-client-urls: <span class="s2">&#34;https://localhost:2379&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-listen-peer-urls: <span class="s2">&#34;https://localhost:2380&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-initial-advertise-peer-urls: <span class="s2">&#34;https://localhost:2380&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-peer-cert-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">.pem&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-peer-key-file: <span class="s2">&#34;/etc/sensu/tls/</span><span class="nv">$BACKEND_FQDN</span><span class="s2">-key.pem&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-peer-client-cert-auth: <span class="s2">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">etcd-peer-trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Restart backend</span>
+</span></span><span class="line"><span class="cl">sudo systemctl restart sensu-backend
+</span></span><span class="line"><span class="cl"><span class="c1"># Update sensuctl to use https</span>
+</span></span><span class="line"><span class="cl">sensuctl configure -n <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--username <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_USERNAME</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--password <span class="nv">$SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--namespace default <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--url <span class="s1">&#39;http://127.0.0.1:8080&#39;</span>
+</span></span></code></pre></div><h3 id="allowing-client-and-agents-to-connect-to-the-backend">Allowing client and agents to connect to the backend<a href="#allowing-client-and-agents-to-connect-to-the-backend" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><code>$CLIENT_IP</code> is the IP of the host accessing the Web interface.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Allowing to access the sensu dashboard running on port 3000</span>
+</span></span><span class="line"><span class="cl">sudo ufw allow from <span class="nv">$CLIENT_IP</span> to any port <span class="m">3000</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Allowing an agent to connect to the Sensu backend</span>
+</span></span><span class="line"><span class="cl">sudo ufw allow from <span class="nv">$AGENT_IP</span> to any port <span class="m">8081</span>
+</span></span></code></pre></div><p>The sensu web interface is available on <code>https://$BACKEND_FQDN:3000</code>.</p>
+<h3 id="installing-and-configuring-agents">Installing and configuring agents<a href="#installing-and-configuring-agents" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Add the Sensu repository</span>
+</span></span><span class="line"><span class="cl">curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh <span class="p">|</span> sudo bash
+</span></span><span class="line"><span class="cl"><span class="c1"># Install the sensu-go-agent package</span>
+</span></span><span class="line"><span class="cl">sudo yum install sensu-go-agent
+</span></span><span class="line"><span class="cl"><span class="c1"># Copy the config template from the docs</span>
+</span></span><span class="line"><span class="cl">sudo curl -L https://docs.sensu.io/sensu-go/latest/files/agent.yml -o /etc/sensu/agent.yml
+</span></span><span class="line"><span class="cl"><span class="c1"># Start sensu-agent using a service manager</span>
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> --now sensu-agent
+</span></span><span class="line"><span class="cl">sudo systemctl status -l sensu-agent
+</span></span></code></pre></div><h4 id="edit-configuration">Edit configuration<a href="#edit-configuration" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">grep -v <span class="s1">&#39;^\(#.*\|\s*\)$&#39;</span> /etc/sensu/agent.yml
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">backend-url:
+</span></span><span class="line"><span class="cl">  - <span class="s2">&#34;wss://</span><span class="nv">$BACKEND_IP</span><span class="s2">:8081&#34;</span>
+</span></span><span class="line"><span class="cl">log-level: <span class="s2">&#34;debug&#34;</span>
+</span></span><span class="line"><span class="cl">trusted-ca-file: <span class="s2">&#34;/etc/sensu/tls/ca.pem&#34;</span>
+</span></span><span class="line"><span class="cl">subscriptions:
+</span></span><span class="line"><span class="cl">  - system
+</span></span><span class="line"><span class="cl">  <span class="c1"># On the host testing the remote mail server</span>
+</span></span><span class="line"><span class="cl">  - mailcow
+</span></span></code></pre></div><h4 id="check-agents-listed-in-the-backend">Check agents listed in the backend<a href="#check-agents-listed-in-the-backend" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Checking agent&#39;s heartbeats</span>
+</span></span><span class="line"><span class="cl">sensuctl entity list
+</span></span></code></pre></div><h2 id="monitoring-with-sensu">Monitoring with Sensu<a href="#monitoring-with-sensu" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># Installing plugins</span>
+</span></span><span class="line"><span class="cl">sensuctl asset add sensu-plugins/sensu-plugins-cpu-checks -r cpu-checks-plugins
+</span></span><span class="line"><span class="cl">sensuctl asset add sensu/sensu-ruby-runtime -r sensu-ruby-runtime
+</span></span><span class="line"><span class="cl">sensuctl asset add sensu/sensu-email-handler -r email-handler
+</span></span><span class="line"><span class="cl">sensuctl asset add sensu/monitoring-plugins
+</span></span><span class="line"><span class="cl">sensuctl asset add dhpowrhost/sensu-plugins-imap
+</span></span><span class="line"><span class="cl"><span class="c1"># Add a mail handler</span>
+</span></span><span class="line"><span class="cl">cat <span class="s">&lt;&lt; EOF | sensuctl create
+</span></span></span><span class="line"><span class="cl"><span class="s">---
+</span></span></span><span class="line"><span class="cl"><span class="s">api_version: core/v2
+</span></span></span><span class="line"><span class="cl"><span class="s">type: Handler
+</span></span></span><span class="line"><span class="cl"><span class="s">metadata:
+</span></span></span><span class="line"><span class="cl"><span class="s">  namespace: default
+</span></span></span><span class="line"><span class="cl"><span class="s">  name: email
+</span></span></span><span class="line"><span class="cl"><span class="s">spec:
+</span></span></span><span class="line"><span class="cl"><span class="s">  type: pipe
+</span></span></span><span class="line"><span class="cl"><span class="s">  command: sensu-email-handler -f $MAIL_FROM -t $MAIL_TO -s $MAIL_SERVER -u $MAIL_USER -p $MAIL_PASS
+</span></span></span><span class="line"><span class="cl"><span class="s">  timeout: 10
+</span></span></span><span class="line"><span class="cl"><span class="s">  filters:
+</span></span></span><span class="line"><span class="cl"><span class="s">  - is_incident
+</span></span></span><span class="line"><span class="cl"><span class="s">  - not_silenced
+</span></span></span><span class="line"><span class="cl"><span class="s">  - state_change_only
+</span></span></span><span class="line"><span class="cl"><span class="s">  runtime_assets:
+</span></span></span><span class="line"><span class="cl"><span class="s">  - email-handler
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Creating checks</span>
+</span></span><span class="line"><span class="cl">sensuctl check create check-cpu <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --command <span class="s1">&#39;check-cpu.rb -w 75 -c 90&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --subscriptionssystem <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --runtime-assets cpu-checks-plugins,sensu-ruby-runtime <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --handlers email
+</span></span><span class="line"><span class="cl">sensuctl check create check-disk-usage <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --command <span class="s2">&#34;check-disk-usage.rb -w 70 -c 90 x debugfs,tracefs,proc,overlay,nsfs -p &#39;(\/var\/lib\/docker|\/snap)&#39;&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --subscriptions system <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --runtime-assets sensu-plugins/sensu-plugins-disk-checks <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --handlers email
+</span></span><span class="line"><span class="cl">sensuctl check create check-smtp <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --command <span class="s1">&#39;check_smtp -H $MAIL_SERVER -p 587 -U $MAIL_USER -P $MAIL_PASS&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --subscriptions mailcow <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --runtime-assets sensu/monitoring-plugins <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --handlers email
+</span></span><span class="line"><span class="cl">sensuctl check create check-imap <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --command <span class="s1">&#39;check-imap.rb -h $MAIL_SERVER -p 993 -u $MAIL_USER -p $MAIL_PASS&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --interval <span class="m">60</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --subscriptions mailcow <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --runtime-assets dhpowrhost/sensu-plugins-imap,sensu-ruby-runtime <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --handlers email
+</span></span></code></pre></div>
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://blog.bapt.name/tags/sysadmin">sysadmin</a></span><span class="tag"><a href="https://blog.bapt.name/tags/monitoring">monitoring</a></span><span class="tag"><a href="https://blog.bapt.name/tags/sensu">sensu</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>835 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2020-04-25 13:56 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Terminal setup ZSH tmux powerlevel10k</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2020/04/21/using-postifx-as-a-relay-on-macos/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Using Postifx as a Relay on MacOS</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

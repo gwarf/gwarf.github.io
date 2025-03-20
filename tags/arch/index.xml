@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>arch on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/arch/</link>
+    <description>Recent content in arch on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Tue, 29 Jul 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/arch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rebuilding a package using ABS</title>
+      <link>https://blog.bapt.name/2014/07/29/rebuilding-a-package-using-abs/</link>
+      <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/07/29/rebuilding-a-package-using-abs/</guid>
+      <description>Rebuilding an Archlinux package using Arch Build System (ABS) Rebuilding a system package on Archlinux as a user is really simple using ABS.
+yaourt -S abs cp /etc/abs.conf ~/.abs.conf sed -i &amp;#39;s#.*ABSROOT.*#ABSROOT=&amp;#34;\$HOME/abs&amp;#34;#&amp;#39; ~/.abs.conf mkdir ~/abs abs extra/nvidia cd ~/abs/extra/nvidia makepkg -s yaourt nvidia*.pkg.tar.xz </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Building Freebsd Ports">
+<meta itemprop="description" content="Post covering how to build FreeBSD ports using poudriere and portshaker.
+ Back to an old platonic love Lately, I had to came back to FreeBSD, and take over maintenance of some services deployed in FreeBSD.
+I&rsquo;ve been an happy FreeBSD years ago, I enjoyed this a lot, the handbook and other documentation are marvelous, many things &ldquo;just works&rdquo;, and I have a beard.
+Long time ago I was also enjoying a very cool FreeBSD setup guide, from iMil."><meta itemprop="datePublished" content="2024-08-31T15:03:41+02:00" />
+<meta itemprop="dateModified" content="2024-08-31T15:03:41+02:00" />
+<meta itemprop="wordCount" content="1559">
+<meta itemprop="keywords" content="freebsd,tutorial,ports,maintainer," /><meta property="og:title" content="Building Freebsd Ports" />
+<meta property="og:description" content="Post covering how to build FreeBSD ports using poudriere and portshaker.
+ Back to an old platonic love Lately, I had to came back to FreeBSD, and take over maintenance of some services deployed in FreeBSD.
+I&rsquo;ve been an happy FreeBSD years ago, I enjoyed this a lot, the handbook and other documentation are marvelous, many things &ldquo;just works&rdquo;, and I have a beard.
+Long time ago I was also enjoying a very cool FreeBSD setup guide, from iMil." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2024/08/31/building-freebsd-ports/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-31T15:03:41+02:00" />
+<meta property="article:modified_time" content="2024-08-31T15:03:41+02:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Building Freebsd Ports"/>
+<meta name="twitter:description" content="Post covering how to build FreeBSD ports using poudriere and portshaker.
+ Back to an old platonic love Lately, I had to came back to FreeBSD, and take over maintenance of some services deployed in FreeBSD.
+I&rsquo;ve been an happy FreeBSD years ago, I enjoyed this a lot, the handbook and other documentation are marvelous, many things &ldquo;just works&rdquo;, and I have a beard.
+Long time ago I was also enjoying a very cool FreeBSD setup guide, from iMil."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Building Freebsd Ports</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="Table of Contents"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Aug 31, 2024</span></div>
+				<h1>Building Freebsd Ports</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p>Post covering how to build FreeBSD ports using poudriere and portshaker.</p>
+</blockquote>
+<h2 id="back-to-an-old-platonic-love">Back to an old platonic love<a href="#back-to-an-old-platonic-love" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Lately, I had to came back to <a href="https://www.freebsd.org/">FreeBSD</a>, and take
+over maintenance of some services deployed in FreeBSD.</p>
+<p>I&rsquo;ve been an happy FreeBSD years ago, I enjoyed this a lot, the
+<a href="https://docs.freebsd.org/en/books/handbook/">handbook</a> and other
+documentation are marvelous, many things &ldquo;just works&rdquo;, and I have a beard.</p>
+<p>Long time ago I was also enjoying a very cool FreeBSD setup guide, from
+<a href="https://imil.net/blog/">iMil</a>. And together with GCU Squad they were
+spreading fun and love around the (BSD) world&hellip;</p>
+<p>In fact I moved a bit away mainly due to lack of available time. You know,
+$WORK, $kids, $LIFE, &hellip; ^^</p>
+<p>So thanks to $WORK, I know have the opportunity to dive again in the FreeBSD
+world.</p>
+<p>I&rsquo;ve got a few ports to maintain (including an old port of pydf I became the
+maintainer of, and that I was a bit ashamed to let rot due to lack of
+time&hellip;), and I&rsquo;ve been recently looking at options for building the ports.</p>
+<p>This page documents the steps I followed to set my building environment up.</p>
+<h2 id="my-requirements---wishes">My requirements - wishes<a href="#my-requirements---wishes" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li>I need a setup allowing to build ports that are managed in an
+overlay/separate port tree, typically managed in a Git repository.</li>
+<li>I want to build ports using
+<a href="https://docs.freebsd.org/en/books/handbook/jails/">FreeBSD Jails</a>
+isolationg from the host OS and keeping it clear as much as possible.</li>
+<li>I want to reuse existing packages as much as possible, and especially avoid
+building big resouces hungry software like the compilers and buildrs like
+gcc, rust, and cmake. Especially as I currently don&rsquo;t need any customisation
+there.</li>
+<li>Leveraging ZFS, especially as I need to become more acustonished to it.</li>
+</ul>
+<h2 id="tooling">Tooling<a href="#tooling" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>I ended up using a few tools:</p>
+<ul>
+<li><a href="https://man.freebsd.org/cgi/man.cgi?poudriere">poudriere</a>: to build ports in FreeBSD Jails</li>
+<li><a href="https://man.freebsd.org/cgi/man.cgi?portshaker">portshaker</a>: to keep ports tree udpated and merged. And also because it&rsquo;s a</li>
+</ul>
+<p>tool that I just discovered and that was in fact created by an old colleague,
+another memory from the past :)</p>
+<h2 id="setting-the-tools-up">Setting the tools up<a href="#setting-the-tools-up" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>I will make use of <a href="https://man.freebsd.org/cgi/man.cgi?query=doas">doas</a>
+to run the commands as root.</p>
+<h3 id="preparing-for-building-in-jails-with-poudriere">Preparing for building in Jails with Poudriere<a href="#preparing-for-building-in-jails-with-poudriere" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<h4 id="installing-poudriere-portshaker-and-friends">Installing poudriere, portshaker and friends<a href="#installing-poudriere-portshaker-and-friends" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas pkg update
+</span></span><span class="line"><span class="cl">doas pkg install poudriere git portshaker
+</span></span></code></pre></div><h4 id="setting-up-poudriere">Setting up poudriere<a href="#setting-up-poudriere" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>The first step is to create the ZFS dataset that will be used by poudriere.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Find a suitable ZFS pool, for me it will be zroot</span>
+</span></span><span class="line"><span class="cl">zpool list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a ZFS dataset for poudriere</span>
+</span></span><span class="line"><span class="cl">doas zfs create -o <span class="nv">mountpoint</span><span class="o">=</span>/poudriere zroot/poudriere
+</span></span></code></pre></div><p>Now we have a nice ZFS dataset <code>zroot/poudriere</code> mounted on <code>/poudriere</code> and ready
+to be used to host all poudriere-related things.</p>
+<h4 id="configuring-poudriere">Configuring poudriere<a href="#configuring-poudriere" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>The poudriere configuration is quite straigthforward, and I mainly add an
+issue with a single point:</p>
+<ul>
+<li>From the official doc and other posts I saw, it wasn&rsquo;t clear to me how to
+setup BASEFS properly, sawing many examples specifying a <code>ZROOTFS</code>, but
+keeping <code>BASEFS</code> at another path.</li>
+</ul>
+<p>Configuring <code>/usr/local/etc/poudriere.conf</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nv">ZPOOL</span><span class="o">=</span>zroot
+</span></span><span class="line"><span class="cl"><span class="nv">ZROOTFS</span><span class="o">=</span>/poudriere
+</span></span><span class="line"><span class="cl"><span class="nv">FREEBSD_HOST</span><span class="o">=</span>https://download.FreeBSD.org
+</span></span><span class="line"><span class="cl"><span class="nv">RESOLV_CONF</span><span class="o">=</span>/etc/resolv.conf
+</span></span><span class="line"><span class="cl"><span class="nv">BASEFS</span><span class="o">=</span>/poudriere
+</span></span><span class="line"><span class="cl"><span class="nv">DISTFILES_CACHE</span><span class="o">=</span>/poudriere/distfiles
+</span></span><span class="line"><span class="cl"><span class="nv">USE_PORTLINT</span><span class="o">=</span>yes
+</span></span><span class="line"><span class="cl"><span class="nv">USE_TMPFS</span><span class="o">=</span>yes
+</span></span><span class="line"><span class="cl"><span class="nv">NOLINUX</span><span class="o">=</span>yes
+</span></span><span class="line"><span class="cl"><span class="nv">ALLOW_MAKE_JOBS</span><span class="o">=</span>yes
+</span></span><span class="line"><span class="cl"><span class="c1"># Retrieve latest existing packages for all components</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PACKAGE_FETCH_BRANCH</span><span class="o">=</span>latest
+</span></span><span class="line"><span class="cl"><span class="c1"># Except for the ones I manage</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PACKAGE_FETCH_BLACKLIST</span><span class="o">=</span><span class="s2">&#34;lua-resty-openidc lua-resty-session3 rbw&#34;</span>
+</span></span></code></pre></div><h4 id="creating-the-build-jail">Creating the build jail<a href="#creating-the-build-jail" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>I&rsquo;m currently only interested in using the latest stable release, thus
+currently <code>14.1-RELEASE</code>.</p>
+<p>See <a href="https://man.freebsd.org/cgi/man.cgi?poudriere-jail">poudriere-jail (8)</a>.;</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Create the build jail</span>
+</span></span><span class="line"><span class="cl">doas poudriere jail -c -j 14-1-amd64 -v 14.1-RELEASE
+</span></span></code></pre></div><h4 id="creating-the-ports-tree">Creating the ports tree<a href="#creating-the-ports-tree" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>Poudriere will use a ports tree made of two souces:</p>
+<ul>
+<li>the upstream port tree, using it&rsquo;s latest version</li>
+<li>a repository of custom ports</li>
+</ul>
+<p>In order to do this, I will make use of <code>portshaker</code>, and will just create an
+empty poudriere ports tree that will later be filled using <code>portshaker</code>.</p>
+<p>See <a href="https://man.freebsd.org/cgi/man.cgi?query=poudriere-ports">poudiere-ports (8)</a>
+for help on how to use <code>poudriere ports</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Create an empty ports tree, named main</span>
+</span></span><span class="line"><span class="cl">doas poudriere ports -cF -p main
+</span></span><span class="line"><span class="cl"><span class="c1"># Create folder for distfiles</span>
+</span></span><span class="line"><span class="cl">doas mkdir /poudriere/distfiles
+</span></span><span class="line"><span class="cl"><span class="c1"># Check the ports tree that got created</span>
+</span></span><span class="line"><span class="cl">poudriere ports -l
+</span></span></code></pre></div><h4 id="setting-up-portshaker">Setting up portshaker<a href="#setting-up-portshaker" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>So now we have a ports tree ready to be consumed by poudriere, but we need to
+populate it. I&rsquo;m using <a href="https://github.com/smortex/portshaker">portshaker</a> for this.</p>
+<p>Thanks Romain for porthshaker!</p>
+<h5 id="creating-a-zfs-dataset-for-the-portshaker-cache">Creating a ZFS dataset for the portshaker cache<a href="#creating-a-zfs-dataset-for-the-portshaker-cache" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h5>
+<p>Optionally, it&rsquo;s possible to create a dedicated volume for portshaker cache.
+It can be useful if the root ZFS volume is limited in space</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas zfs create -o <span class="nv">mountpoint</span><span class="o">=</span>/var/cache/portshaker zroot/portshaker
+</span></span></code></pre></div><h5 id="configuring-the-ports-trees-portshaker-will-maintain-and-merge">Configuring the ports trees portshaker will maintain and merge<a href="#configuring-the-ports-trees-portshaker-will-maintain-and-merge" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h5>
+<p>Shells scripts are used to populate the source ports tree. For more details see
+potshaker.d (5)](<a href="https://man.freebsd.org/cgi/man.cgi?query=portshaker.d)">https://man.freebsd.org/cgi/man.cgi?query=portshaker.d)</a>.</p>
+<p>As already mentioned, I will need two ports tree sources:</p>
+<ul>
+<li>freebsd: the upstream FreeBSD ports tree</li>
+<li>custom: a git repository where I host the few ports I maintain</li>
+</ul>
+<p>For the FreeBSD source, I use the
+<a href="https://github.com/freebsd/freebsd-ports.git">official FreeBSD ports GitHub mirror</a>.</p>
+<p>Create <code>/usr/local/etc/portshaker.d/freebsd</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>. /usr/local/share/portshaker/portshaker.subr
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> !<span class="o">=</span> <span class="s1">&#39;--&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  err <span class="m">1</span> <span class="s2">&#34;Extra arguments&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="nb">shift</span>
+</span></span><span class="line"><span class="cl"><span class="nv">method</span><span class="o">=</span><span class="s2">&#34;git&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">git_clone_uri</span><span class="o">=</span><span class="s2">&#34;https://git.freebsd.org/ports.git&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">git_branch</span><span class="o">=</span><span class="s2">&#34;main&#34;</span>
+</span></span><span class="line"><span class="cl">run_portshaker_command <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p>Make the script executable:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas chmod +x /usr/local/etc/portshaker.d/freebsd
+</span></span></code></pre></div><p>For the custom source, I will use a public GitHub repositories that I manage:
+<a href="https://github.com/gwarf/freebsd-ports-custom.git">gwarf/freebsd-ports-custom</a>.</p>
+<p>I&rsquo;m cloning using <code>https</code> and not using <code>ssh+git</code> as it&rsquo;s a public repository
+and as it is simpler, avoiding the need to care about authentication and
+authorization.</p>
+<p>In case authentication is required, you will have to ensure the <code>root</code> user
+can properly authenticate, using a personal authentication token, an SSH key
+or else, as supported by the git client.</p>
+<p>Create <code>/usr/local/etc/portshaker.d/custom</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>. /usr/local/share/portshaker/portshaker.subr
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> !<span class="o">=</span> <span class="s1">&#39;--&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  err <span class="m">1</span> <span class="s2">&#34;Extra arguments&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="nb">shift</span>
+</span></span><span class="line"><span class="cl"><span class="nv">method</span><span class="o">=</span><span class="s2">&#34;git&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">git_clone_uri</span><span class="o">=</span><span class="s2">&#34;https://github.com/gwarf/freebsd-ports-custom.git&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">git_branch</span><span class="o">=</span><span class="s2">&#34;main&#34;</span>
+</span></span><span class="line"><span class="cl">run_portshaker_command <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p>Make the script executable:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas chmod +x /usr/local/etc/portshaker.d/custom
+</span></span></code></pre></div><h5 id="configuring-portshaker">Configuring portshaker<a href="#configuring-portshaker" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h5>
+<p>The main configuration of <a href="https://github.com/smortex/portshaker">potshaker</a>
+is in <code>/usr/local/etc/portshaker.conf</code>, and an sample file is provided as
+<code>/usr/local/etc/portshaker.conf.sample</code>. The man page is helpful
+<a href="https://man.freebsd.org/cgi/man.cgi?query=portshaker.conf">portshaker.conf (5)</a>.</p>
+<p>The goal of this configuration is to populate the <code>/poudriere/ports</code> ports
+tree that will be used by poudriere.</p>
+<p>The <code>custom</code> ports tree will be used as an overlay on the offical FreeBSD
+ports tree, overwriting existing files, to update existing ports, and adding
+new files and directories for adding new ports.</p>
+<p>Create <code>/usr/local/etc/portshaker.conf</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Directory to cache port trees</span>
+</span></span><span class="line"><span class="cl"><span class="nv">mirror_base_dir</span><span class="o">=</span><span class="s2">&#34;/var/cache/portshaker&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">use_zfs</span><span class="o">=</span><span class="s2">&#34;yes&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ports_trees</span><span class="o">=</span><span class="s2">&#34;main&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Poudriere-related configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nv">poudriere_dataset</span><span class="o">=</span><span class="s2">&#34;zroot/poudriere&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">poudriere_ports_mountpoint</span><span class="o">=</span><span class="s2">&#34;/poudriere/ports&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Merge trees in the empty `main` pourdriere ports tree prepared previously</span>
+</span></span><span class="line"><span class="cl"><span class="nv">main_poudriere_tree</span><span class="o">=</span><span class="s2">&#34;main&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Force overwritting files freebsd ports with custom overlay</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># This doesn&#39;t remove non matching files</span>
+</span></span><span class="line"><span class="cl"><span class="nv">main_merge_from</span><span class="o">=</span><span class="s2">&#34;freebsd custom+&#34;</span>
+</span></span></code></pre></div><h5 id="using-portshaker">Using portshaker<a href="#using-portshaker" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h5>
+<p>The porthskare UX is quite simple, you will want to often use it without any
+parameter, meaning that it will update and merge all trees.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Update a single port tree</span>
+</span></span><span class="line"><span class="cl">doas portshaker -u freebsd
+</span></span><span class="line"><span class="cl"><span class="c1"># Update all ports trees</span>
+</span></span><span class="line"><span class="cl">doas portshaker -U
+</span></span><span class="line"><span class="cl"><span class="c1"># Merge prot trees</span>
+</span></span><span class="line"><span class="cl">doas porthakser -M
+</span></span><span class="line"><span class="cl"><span class="c1"># Update and merge port trees</span>
+</span></span><span class="line"><span class="cl">doas portshaker
+</span></span></code></pre></div><h3 id="using-custom-option-allowing-to-build-obsidian">Using custom option allowing to build Obsidian<a href="#using-custom-option-allowing-to-build-obsidian" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas vim /usr/local/etc/poudriere.d/make.conf
+</span></span><span class="line"><span class="cl"><span class="c1"># As per options in ports documentation, like /poudriere/ports/main/Mk/bsd.licenses.mk</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># To allow building obsidian</span>
+</span></span><span class="line"><span class="cl"><span class="nv">DISABLE_LICENSES</span><span class="o">=</span>yes
+</span></span></code></pre></div><h3 id="building-the-ports">Building the ports<a href="#building-the-ports" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>I use <code>/usr/local/etc/poudriere.d/pkglist</code> to document the list of ports to be
+built, let&rsquo;s first populate it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Populating the list of packages to be built</span>
+</span></span><span class="line"><span class="cl">doas sh -c <span class="s2">&#34;echo &#39;security/rbw&#39; &gt; /usr/local/etc/poudriere.d/pkglist&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">doas sh -c &#34;</span><span class="nb">echo</span> <span class="s1">&#39;textproc/obsidian&#39;</span> &gt;&gt; /usr/local/etc/poudriere.d/pkglist<span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">doas sh -c <span class="s2">&#34;echo &#39;www/lua-resty-session&#39; &gt;&gt; /usr/local/etc/poudriere.d/pkglist&#34;&#34;
+</span></span></span></code></pre></div><p>Then it&rsquo;s possible to build the ports with the jail template that was
+previously created.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Updating and merging the trees</span>
+</span></span><span class="line"><span class="cl">doas portshaker
+</span></span><span class="line"><span class="cl"><span class="c1"># Building packages verbosely using the merged ports trees</span>
+</span></span><span class="line"><span class="cl">doas poudriere bulk -f /usr/local/etc/poudriere.d/pkglist -j 14-1-amd64 -p main -v -v
+</span></span></code></pre></div><p>The resulting ports will be in <code>/poudriere/data/packages/14-1-amd64-main/</code>,
+<code>14-1-amd64</code> being the name of the jail used to build, and <code>main</code> being the
+name of the poudriere ports tree.</p>
+<h3 id="using-the-ports">Using the ports<a href="#using-the-ports" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>It is possible to access the repository locally.</p>
+<p>Create repository definition in <code>/usr/local/etc/pkg/repos/custom.conf</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">Custom:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="err">url:</span> <span class="nt">&#34;file:///poudriere/data/packages/14-1-amd64-main&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Use the repository:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Check repositories configuration</span>
+</span></span><span class="line"><span class="cl">pkg -vv
+</span></span><span class="line"><span class="cl"><span class="c1"># Update packages list</span>
+</span></span><span class="line"><span class="cl">doas pkg update
+</span></span><span class="line"><span class="cl"><span class="c1"># Search for a package, showing its origin</span>
+</span></span><span class="line"><span class="cl">doas pkg search -Q repository rbw
+</span></span><span class="line"><span class="cl">rbw-1.11.1
+</span></span><span class="line"><span class="cl">Repository     : Custom <span class="o">[</span>file:////poudriere/data/packages/14-1-amd64-main<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Comment        : Unofficial Bitwarden cli
+</span></span></code></pre></div><blockquote>
+<p>It is possible to serve directly or <code>rsync</code> this directory to a web server
+so that FreeBSD servers and jails can use it.</p>
+</blockquote>
+<h3 id="testing-a-port-in-a-jail">Testing a port in a jail<a href="#testing-a-port-in-a-jail" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>When working on ports, it&rsquo;s also very convenient to use
+<a href="https://man.freebsd.org/cgi/man.cgi?query=poudriere-testport">poudiere-testport (8)</a>
+to test an individual port, before using it, and/or submitting it.</p>
+<p>Adding the <code>-i</code> parameter spawns an interactive shell at the end of the run,
+allowing to do changes and tests. As the ports as built as the <code>nobody</code> user,
+it may be required to excalate to root via <code>su -</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas poudriere testport -j 14-1-amd64 -p main -o security/rbw
+</span></span></code></pre></div><h2 id="to-be-followed">To be followed<a href="#to-be-followed" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>While I&rsquo;m currently very happy with this setup, and all the tools I used,
+there are things to improve, like making use of ccache, or customising ports
+options.</p>
+<p>I also need to find and document a simple/easy way to use poudriere to work on
+ports, like when bumping their versions or creating new ones.
+I&rsquo;ve some notes on waht I currently do, but it&rsquo;s not yet something I&rsquo;m happy
+with.</p>
+<h2 id="references">References<a href="#references" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Here is some documentation I followed to set this up, thanks to all the
+authors.</p>
+<ul>
+<li><a href="https://docs.freebsd.org/en/books/handbook/ports/#ports-poudriere">FreeBSD Handbook: building packages with poudriere</a></li>
+<li><a href="https://docs.freebsd.org/en/books/porters-handbook/testing/#testing-poudriere">FreeBSD Porter&rsquo;s Handbook: Testing with poudriere</a></li>
+<li><a href="https://github.com/freebsd/poudriere/wiki/portshaker">GitHub Poudriere wiki: portshaker</a></li>
+<li><a href="https://zewaren.net/poudriere.html">Erwan Martin: Build your own FreeBSD ports and make packages out of them using jails, poudriere and portshaker</a></li>
+<li><a href="https://funcptr.net/2013/12/11/building-custom-ports-with-poudriere-and-portshaker/">Bert JW Regeer: Building Custom Ports With Poudriere And Portshaker</a></li>
+<li><a href="https://forums.freebsd.org/threads/apply-own-patches-automatically-with-poudriere.46097/">FreeBSD forum: apply own patches with poudriere&quot;</a></li>
+<li><a href="https://www.boris-tassou.fr/freebsd-poudriere-ou-comment-gerer-ses-paquets/">Boris Tassou: FreeBSD: poudriere ou comment gérer ses paquets</a></li>
+<li><a href="https://wiki.freebsd.org/VladimirKrstulja/Guides/Poudriere">Poudriere: Getting Started - Tutorial</a></li>
+</ul>
+
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://blog.bapt.name/tags/freebsd">freebsd</a></span><span class="tag"><a href="https://blog.bapt.name/tags/tutorial">tutorial</a></span><span class="tag"><a href="https://blog.bapt.name/tags/ports">ports</a></span><span class="tag"><a href="https://blog.bapt.name/tags/maintainer">maintainer</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1559 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2024-08-31 13:03 &#43;0000</p>
+			</footer>
+		</article>
+		<aside id="toc">
+			<div class="toc-title">Table of Contents</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#back-to-an-old-platonic-love">Back to an old platonic love</a></li>
+    <li><a href="#my-requirements---wishes">My requirements - wishes</a></li>
+    <li><a href="#tooling">Tooling</a></li>
+    <li><a href="#setting-the-tools-up">Setting the tools up</a>
+      <ul>
+        <li><a href="#preparing-for-building-in-jails-with-poudriere">Preparing for building in Jails with Poudriere</a></li>
+        <li><a href="#using-custom-option-allowing-to-build-obsidian">Using custom option allowing to build Obsidian</a></li>
+        <li><a href="#building-the-ports">Building the ports</a></li>
+        <li><a href="#using-the-ports">Using the ports</a></li>
+        <li><a href="#testing-a-port-in-a-jail">Testing a port in a jail</a></li>
+      </ul>
+    </li>
+    <li><a href="#to-be-followed">To be followed</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2024/08/31/using-caddy-to-serve-poudriere/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Using Caddy to Serve Poudriere</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2020/07/09/using-nitrokey-pro-and-fido2/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Using Nitrokey Pro and Fido2</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>adsl on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/adsl/</link>
+    <description>Recent content in adsl on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Wed, 20 May 2020 12:50:27 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/adsl/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SQM QoS OpenWrt OpenMPTCProuter</title>
+      <link>https://blog.bapt.name/2020/05/20/sqm-qos-openwrt-openmptcprouter/</link>
+      <pubDate>Wed, 20 May 2020 12:50:27 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/05/20/sqm-qos-openwrt-openmptcprouter/</guid>
+      <description>Doing QoS with OpenMPTCProuter I&amp;rsquo;m at the countryside so no fiber/FTTH but only FTTD (Fiber To The DSLAM)&amp;hellip; Being a remote worker I need a quite stable connection, so I&amp;rsquo;m currently using 3 ADSL connections aggregated via OpenMPTCProuter. Thus not only if one link fail it will be transparent but the upload and download links are aggregated, it&amp;rsquo;s not only a failover on the links. Initially I was an OverTheBox user, but that&amp;rsquo;s another story&amp;hellip;</description>
+    </item>
+    
+  </channel>
+</rss>

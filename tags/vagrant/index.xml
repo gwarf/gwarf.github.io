@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>vagrant on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/vagrant/</link>
+    <description>Recent content in vagrant on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Fri, 17 Jan 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/vagrant/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Creating Vagrant base boxes</title>
+      <link>https://blog.bapt.name/2014/01/17/creating-vagrant-base-boxes/</link>
+      <pubDate>Fri, 17 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/01/17/creating-vagrant-base-boxes/</guid>
+      <description>Create a VM inside VirtualBox  No usb No audio One dynamic disk (10GiB) 512 MiB of RAM One vcpu One network card in NAT mode  Install the base system, as minimal as possible Scientific Linux 5  Retrieve ISOs CD 1 and 2  wget http://ftp1.scientificlinux.org/linux/scientific/5x/iso/x86_64/cd/SL.510.110513.CD.x86_64.disc{1,2}.iso  Boot CD Use basic video driver installation Use default configuration  except:  DHCP for ipv6 Deselct every packages sets     Use vagrant as root password  Scientific Linux 6  Retrieve netinstall ISO CD  wget http://ftp.</description>
+    </item>
+    
+    <item>
+      <title>Puppet tests using Vagrant</title>
+      <link>https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/</link>
+      <pubDate>Tue, 10 Dec 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/</guid>
+      <description>XXX Work in progress.
+Intro Read first
+ http://www.example42.com/?q=Example42%20Puppet%20Playground http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/ http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/ http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent http://java.dzone.com/articles/test-puppet-config-existing https://github.com/garethr/puppetmaster-vagrant  Prerequisites  git VirtualBox Vagrant  yaourt -S git yaourt -S virtualbox virtualbox-guest-iso yaourt -S vagrant VMs list  One puppet master running Debian 7 64bits One puppet client running Debian 7 64bits One puppet client running Scientific Linux 5.x 64 bits One puppet client running Scientific Linux 6.x 64 bits One puppet client running CentOS 6.</description>
+    </item>
+    
+  </channel>
+</rss>

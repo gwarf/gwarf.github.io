@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="checking se and lfc consistency">
+<meta itemprop="description" content="Dealing with inconsistency between the LFC and DPM The biomed VO team made accessible some useful tools to enforce consistency of Storage Elements (SE) and Logical File Catalog (LFC) available on github.
+In the neugrid4you project we have a lot of big dataset made available to our user community, but some of the datasets are very big, (ADNI is something like 30 GiB) and we have to copy and register them in the grid on multiple SE and register in our LFC."><meta itemprop="datePublished" content="2014-02-11T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2014-02-11T00:00:00+00:00" />
+<meta itemprop="wordCount" content="324">
+<meta itemprop="keywords" content="grid," /><meta property="og:title" content="checking se and lfc consistency" />
+<meta property="og:description" content="Dealing with inconsistency between the LFC and DPM The biomed VO team made accessible some useful tools to enforce consistency of Storage Elements (SE) and Logical File Catalog (LFC) available on github.
+In the neugrid4you project we have a lot of big dataset made available to our user community, but some of the datasets are very big, (ADNI is something like 30 GiB) and we have to copy and register them in the grid on multiple SE and register in our LFC." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2014/02/11/checking-se-and-lfc-consistency/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2014-02-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2014-02-11T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="checking se and lfc consistency"/>
+<meta name="twitter:description" content="Dealing with inconsistency between the LFC and DPM The biomed VO team made accessible some useful tools to enforce consistency of Storage Elements (SE) and Logical File Catalog (LFC) available on github.
+In the neugrid4you project we have a lot of big dataset made available to our user community, but some of the datasets are very big, (ADNI is something like 30 GiB) and we have to copy and register them in the grid on multiple SE and register in our LFC."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>checking se and lfc consistency</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Feb 11, 2014</span></div>
+				<h1>checking se and lfc consistency</h1>
+			</header>
+			<div class="content">
+				<h2 id="dealing-with-inconsistency-between-the-lfc-and-dpm">Dealing with inconsistency between the LFC and DPM<a href="#dealing-with-inconsistency-between-the-lfc-and-dpm" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The biomed VO team made accessible some useful tools to enforce
+consistency of Storage Elements (SE) and Logical File Catalog (LFC)
+available on <a href="https://github.com/frmichel/biomed-support-tools">github</a>.</p>
+<p>In the <a href="https://neugrid4you.eu">neugrid4you project</a> we have a lot of
+<a href="https://neugrid4you.eu/datasets">big dataset</a> made available to our
+user community, but some of the datasets are very big,
+(<a href="https://ida.loni.ucla.edu/login.jsp?project=ADNI">ADNI</a> is
+something like 30 GiB) and we have to copy and register them in the grid
+on multiple SE and register in our LFC.
+In order to ensure that there isn&rsquo;t any inconsistency (i.e. in order to
+cl ean all the inconsistencies ;) )</p>
+<h2 id="retrieving-inconsistencies">Retrieving inconsistencies<a href="#retrieving-inconsistencies" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The <em>diff-se-dump-lfc.sh</em> script is used to find inconsistencies between
+a dump of a DPM and of the LFC.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dump-se-files.py <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --url srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt; <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --output-file &lt;dpm_server_name&gt;-dpm-dump.txt
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LFC_HOST</span><span class="o">=</span>&lt;lfc_host&gt;
+</span></span><span class="line"><span class="cl">LFCBrowseSE &lt;dpm_server_name&gt; --vo &lt;vo_name&gt; --sfn &gt; &lt;lfc_host&gt;-&lt;vo_name&gt;-lfc-dump.txt
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">diff-se-dump-lfc.sh --older-than <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --se &lt;dpm_server_name&gt; <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --se-dump &lt;dpm_server_name&gt;-dpm-dump.txt <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --lfc-dump &lt;lfc_host&gt;-&lt;vo_name&gt;-lfc-dump.txt
+</span></span></code></pre></div><p>The script will report <em>zombie files</em>, <em>ghost entries</em> and files found
+both in the SE and the LFC.</p>
+<p>Zombie files are files that exist in the SE but are no more referenced
+in the LFC.</p>
+<p>Ghost entries are entries in the LFC that have no corresponding files on
+the SE.</p>
+<h2 id="cleaning-ghost-entries">Cleaning ghost entries<a href="#cleaning-ghost-entries" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>There is no automatic way of cleaning ghost entries, and in order to
+retrieve the corresponding LFN it is required to directly access the LFC
+database.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">Cns_file_metadata</span><span class="p">.</span><span class="n">fileid</span><span class="p">,</span><span class="n">guid</span><span class="p">,</span><span class="n">name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">Cns_file_metadata</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">Cns_file_replica</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">ON</span><span class="w"> </span><span class="n">Cns_file_metadata</span><span class="p">.</span><span class="n">fileid</span><span class="o">=</span><span class="n">Cns_file_replica</span><span class="p">.</span><span class="n">fileid</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">WHERE</span><span class="w"> </span><span class="n">sfn</span><span class="o">=</span><span class="s1">&#39;srm: //&lt;dpm_server_name&gt;:8446/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2014-02-10/file-121aa7e8-a9ec-4401-84f1-24341a74433c&#39;</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p><code>Script for retrieving the guid of a sfn</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -e
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">SFN</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">DB_NAME</span><span class="o">=</span>cns_db
+</span></span><span class="line"><span class="cl"><span class="nv">QUERY</span><span class="o">=</span><span class="s2">&#34;SELECT guid FROM Cns_file_metadata INNER
+</span></span></span><span class="line"><span class="cl"><span class="s2">JOIN Cns_file_replica
+</span></span></span><span class="line"><span class="cl"><span class="s2">ON Cns_file_metadata.fileid=Cns_file_replica.fileid
+</span></span></span><span class="line"><span class="cl"><span class="s2">WHERE sfn=&#39;</span><span class="nv">$SFN</span><span class="s2">&#39;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">GUID</span><span class="o">=</span><span class="k">$(</span>mysql --batch --silent <span class="s2">&#34;</span><span class="nv">$DB_NAME</span><span class="s2">&#34;</span> -e <span class="s2">&#34;</span><span class="nv">$QUERY</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;guid:</span><span class="nv">$GUID</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">0</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="k">for</span> sfn in <span class="k">$(</span>cat &lt;dpm_server_name&gt;.output_lfc_lost_files<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  ./get-lfn-for-ghostfile.sh <span class="nv">$sfn</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span> &gt; guid-list.txt
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="k">for</span> guid in <span class="k">$(</span>cat guid-list.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  lcg-la <span class="nv">$guid</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></div><p>Once the list of lfn has been retrieved it is possible to remove the
+wrong entries.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">% lcg-lr lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+</span></span><span class="line"><span class="cl">srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file7fa6f030-f029-418c-a60c-5a8d04253a68
+</span></span><span class="line"><span class="cl">srm://&lt;dpm2_server_name&gt;/dpm/&lt;dpm2_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file2e44af61-a0e0-4868-af30-d08d9e3a7a69
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% lcg-del --force srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file7fa6f030-f029-418c-a60c-5a8d04253a68
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% lcg-lr lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+</span></span><span class="line"><span class="cl">srm://&lt;dpm2_server_name&gt;/dpm/&lt;dpm2_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file2e44af61-a0e0-4868-af30-d08d9e3a7a69
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% lcg-rep -d &lt;dpm_server_name&gt;
+</span></span><span class="line"><span class="cl">lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% lcg-lr
+</span></span><span class="line"><span class="cl">% lfn:/grid/&lt;vo_name&gt;/data/ADNI/IMAGES/128_S_4607/ADNI2/nG+ADNI2+128_S_4607+20121109+0847+S174741+3T0+T2ST+ORIG+V01.tar.bz2
+</span></span><span class="line"><span class="cl">srm://&lt;dpm_server_name&gt;/dpm/&lt;dpm_domain_name&gt;/home/&lt;vo_name&gt;/generated/2014-02-12/filecb922278-02c3-4642-b085-0f3695c9aaee
+</span></span><span class="line"><span class="cl">srm://&lt;dpm2_server_name&gt;/dpm/&lt;dpm2_domain_name&gt;/home/&lt;vo_name&gt;/generated/2013-09-20/file2e44af61-a0e0-4868-af30-d08d9e3a7a69
+</span></span></code></pre></div>
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://blog.bapt.name/tags/grid">grid</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>324 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2014-02-11 00:00 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2014/02/14/starting-to-play-with-puppet-enterprise/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Starting to play with Puppet Enterprise</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2014/02/05/centralized-docs-for-devs/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>centralized docs for devs</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

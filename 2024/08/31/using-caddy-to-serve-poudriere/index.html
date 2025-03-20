@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Using Caddy to Serve Poudriere">
+<meta itemprop="description" content="Follow up to the post on building FreeBSD ports.
+ Poudriere generates HTML content that can be served, and allowing to have an overview of what is currently happening. It&rsquo;s also handy for digging into logs.
+Poudriere comes with some web server templates that can be used, see /usr/local/share/examples/poudriere/ one of them is for caddy and allows having a very quick and simple setup, with even some https on localhost."><meta itemprop="datePublished" content="2024-08-31T19:52:09+02:00" />
+<meta itemprop="dateModified" content="2024-08-31T19:52:09+02:00" />
+<meta itemprop="wordCount" content="480">
+<meta itemprop="keywords" content="" /><meta property="og:title" content="Using Caddy to Serve Poudriere" />
+<meta property="og:description" content="Follow up to the post on building FreeBSD ports.
+ Poudriere generates HTML content that can be served, and allowing to have an overview of what is currently happening. It&rsquo;s also handy for digging into logs.
+Poudriere comes with some web server templates that can be used, see /usr/local/share/examples/poudriere/ one of them is for caddy and allows having a very quick and simple setup, with even some https on localhost." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2024/08/31/using-caddy-to-serve-poudriere/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-31T19:52:09+02:00" />
+<meta property="article:modified_time" content="2024-08-31T19:52:09+02:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Using Caddy to Serve Poudriere"/>
+<meta name="twitter:description" content="Follow up to the post on building FreeBSD ports.
+ Poudriere generates HTML content that can be served, and allowing to have an overview of what is currently happening. It&rsquo;s also handy for digging into logs.
+Poudriere comes with some web server templates that can be used, see /usr/local/share/examples/poudriere/ one of them is for caddy and allows having a very quick and simple setup, with even some https on localhost."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Using Caddy to Serve Poudriere</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Aug 31, 2024</span></div>
+				<h1>Using Caddy to Serve Poudriere</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p>Follow up to the post <a href="../posts/building-freebsd-ports.md">on building FreeBSD ports</a>.</p>
+</blockquote>
+<p>Poudriere generates HTML content that can be served, and allowing to have an
+overview of what is currently happening. It&rsquo;s also handy for digging into
+logs.</p>
+<p>Poudriere comes with some web server templates that can be used, see
+<code>/usr/local/share/examples/poudriere/</code> one of them
+is for <a href="https://caddyserver.com/">caddy</a> and allows having a very quick and
+simple setup, with even some https on localhost.</p>
+<h2 id="installing-caddy">Installing Caddy<a href="#installing-caddy" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Caddy is available as a port, and will run as non root, as documented at
+<a href="https://wiki.freebsd.org/ThomasHurst/Caddy">https://wiki.freebsd.org/ThomasHurst/Caddy</a>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas pkg install caddy
+</span></span><span class="line"><span class="cl">doas service <span class="nb">enable</span> caddy
+</span></span><span class="line"><span class="cl">doas sysrc <span class="nv">caddy_user</span><span class="o">=</span>www <span class="nv">caddy_group</span><span class="o">=</span>www
+</span></span><span class="line"><span class="cl">doas pkg install portacl-rc
+</span></span><span class="line"><span class="cl">doas sysrc <span class="nv">portacl_users</span><span class="o">+=</span>www
+</span></span><span class="line"><span class="cl">doas sysrc <span class="nv">portacl_user_www_tcp</span><span class="o">=</span><span class="s2">&#34;http https&#34;</span>
+</span></span><span class="line"><span class="cl">doas sysrc <span class="nv">portacl_user_www_udp</span><span class="o">=</span><span class="s2">&#34;https&#34;</span>
+</span></span><span class="line"><span class="cl">doas service <span class="nb">enable</span> portacl
+</span></span><span class="line"><span class="cl">doas service start portacl
+</span></span><span class="line"><span class="cl">doas service start caddy
+</span></span></code></pre></div><h2 id="configuring-caddy">Configuring Caddy<a href="#configuring-caddy" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Caddy will only serve a single host, this I will replace the existing
+configuration.</p>
+<p>There is also a sample configuration at <code>/usr/local/etc/caddy/Caddyfile.sample</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">doas cp /usr/local/share/examples/poudriere/Caddyfile.sample /usr/local/etc/caddy/Caddyfile
+</span></span></code></pre></div><p>Edit <code>/usr/local/etc/caddy/Caddyfile</code>, to adjust the path to Poudriere, if
+needed. In my previous post I used <code>/poudriere</code> as <code>BASEFS</code>, thus I should
+replace <code>/usr/local/poudriere/data/</code> as <code>/poudriere/data/</code>.
+I will also set the host name to <code>poudriere.local</code>, and allow to access the
+repository via <code>http</code>, to be used only on the internalnetwork.
+An <code>https</code> is also in place, but it&rsquo;s using a Caddy&rsquo;s generated CA, that won&rsquo;t
+be trusted by default by other systems.
+In a production environment, a real certificate will be used, and if the
+servie is publicly reachable, and DNS correctly configured, caddy will
+automatically retrieve a Let&rsquo;s Encrypt certificate.</p>
+<p>The resulting file, with stripped comment is:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">http://poudriere.local, https://poudriere.local {
+</span></span><span class="line"><span class="cl">  root * /usr/local/share/poudriere/html
+</span></span><span class="line"><span class="cl">  file_server
+</span></span><span class="line"><span class="cl">  # This is to access poudriere logs
+</span></span><span class="line"><span class="cl">  handle_path /data/* {
+</span></span><span class="line"><span class="cl">    root * /poudriere/data/logs/bulk/
+</span></span><span class="line"><span class="cl">    file_server browse
+</span></span><span class="line"><span class="cl">    @skiplog_files path_regexp \.json$
+</span></span><span class="line"><span class="cl">    @public_files path_regexp \.(css|gif|html|ico|jp?g|js|png|svg|woff)$
+</span></span><span class="line"><span class="cl">    @recheck_files path_regexp \.(json|log|txz|tbz|bz2|gz)$
+</span></span><span class="line"><span class="cl">    header @recheck_files +Cache-Control &#34;public, must-revalidate, proxy-revalidate&#34;
+</span></span><span class="line"><span class="cl">    skip_log @skiplog_files
+</span></span><span class="line"><span class="cl">    header @public_files +Cache-Control &#34;public, max-age=172800&#34;
+</span></span><span class="line"><span class="cl">    handle_path /logs/* {
+</span></span><span class="line"><span class="cl">      root * /poudriere/data/logs/bulk/
+</span></span><span class="line"><span class="cl">      file_server browse
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    handle_path /latest-per-pkg/* {
+</span></span><span class="line"><span class="cl">      root * /poudriere/data/logs/bulk/latest-per-pkg/
+</span></span><span class="line"><span class="cl">      file_server browse
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    encode {
+</span></span><span class="line"><span class="cl">      gzip 6
+</span></span><span class="line"><span class="cl">      minimum_length 1100
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      # Allow gzipping js, css, log, svg and json files
+</span></span><span class="line"><span class="cl">      match {
+</span></span><span class="line"><span class="cl">        header Content-Type application/atom+xml*
+</span></span><span class="line"><span class="cl">        header Content-Type application/json*
+</span></span><span class="line"><span class="cl">        header Content-Type application/javascript*
+</span></span><span class="line"><span class="cl">        header Content-Type application/rss+xml*
+</span></span><span class="line"><span class="cl">        header Content-Type application/x-javascript
+</span></span><span class="line"><span class="cl">        header Content-Type application/xhtml+xml*
+</span></span><span class="line"><span class="cl">        header Content-Type application/xml*
+</span></span><span class="line"><span class="cl">        header Content-Type image/gif
+</span></span><span class="line"><span class="cl">        header Content-Type image/jpeg
+</span></span><span class="line"><span class="cl">        header Content-Type image/png
+</span></span><span class="line"><span class="cl">        header Content-Type image/svg+xml*
+</span></span><span class="line"><span class="cl">        header Content-Type text/*
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  # This is to access the package repository
+</span></span><span class="line"><span class="cl">  handle_path /data/* {
+</span></span><span class="line"><span class="cl">    root * /poudriere/data/packages
+</span></span><span class="line"><span class="cl">    file_server browse
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></div><p>Start Caddy manually as it&rsquo;s not expected to be used all the time:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Start caddy manually</span>
+</span></span><span class="line"><span class="cl">doas service caddy restart
+</span></span></code></pre></div><p>The Caddy logs are in <code>/var/log/caddy/caddy.log</code>.</p>
+<p>Then open <a href="https://poudriere.local">https://poudriere.local</a>, and accept the certificate.</p>
+<h2 id="configuring-a-freebsd-to-use-the-repositoy-exposed-via-caddy">Configuring a FreeBSD to use the repositoy exposed via Caddy<a href="#configuring-a-freebsd-to-use-the-repositoy-exposed-via-caddy" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>It&rsquo;s enough to add record a new repository configuration, and only setting the
+URL, relying on the default values for the other settings.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">cat /usr/local/etc/pkg/repos/custom.conf
+</span></span><span class="line"><span class="cl">custom: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  url: <span class="s2">&#34;http://ptidoux.local/packages/14-2-amd64-main&#34;</span>,
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Force updating repositories</span>
+</span></span><span class="line"><span class="cl">daos pkg update -f
+</span></span></code></pre></div>
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>480 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2024-08-31 17:52 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2024/09/15/maintaining-freebsd-ports/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Maintaining Freebsd Ports</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2024/08/31/building-freebsd-ports/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Building Freebsd Ports</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

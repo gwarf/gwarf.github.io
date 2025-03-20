@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>terminal on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/terminal/</link>
+    <description>Recent content in terminal on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Tue, 28 Apr 2020 11:07:46 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/terminal/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Copy Paste With Vim and Tmux</title>
+      <link>https://blog.bapt.name/2020/04/28/copy-paste-with-vim-and-tmux/</link>
+      <pubDate>Tue, 28 Apr 2020 11:07:46 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/28/copy-paste-with-vim-and-tmux/</guid>
+      <description>Copying between two VIM sessions Using vim + clipboard copy to just get vim content and not all the VIM formatting (line numbers and so on).
+  On MacOS X + and * registers are the same.
+  On GNU/Linux
+ + is the desktop clipboard (usable via ctl-c/x/v) * is the X11 primary selection (usable via mouse selection/middle mouse button)    Select text in VIM</description>
+    </item>
+    
+    <item>
+      <title>Terminal setup ZSH tmux powerlevel10k</title>
+      <link>https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/</link>
+      <pubDate>Sat, 25 Apr 2020 17:51:44 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/25/terminal-setup-zsh-tmux-powerlevel10k/</guid>
+      <description>Today I was contacted by a person asking for my terminal setup, after having seen it in a GitHub issue.
+So even if most of my conf is already available in my dotfiles let&amp;rsquo;s share it here too in a more documented way, maybe someone may be interested by this too.
+Obviously it&amp;rsquo;s for ZSH not bash. :P
+Please also be waned that my dotfiles are a work in progress and quite messy/broken, some stuff are also quite obsolete.</description>
+    </item>
+    
+  </channel>
+</rss>

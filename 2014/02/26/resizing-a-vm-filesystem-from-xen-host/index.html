@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Resizing a VM filesystem from Xen host">
+<meta itemprop="description" content="Resizing the disk and filesystem of a VM I had to add more disk space to a Virtual Machine running under XenServer 6.0. In such situation I ususally do like this:
+ create a snapshot (if possible, sometimes disk space makes it impossible) increase the virtual disk size using XenCenter (running from a Windows Virtual Machine&hellip;) boot Sysrescuecd and resize the filesystem using gparted  But this time, due to some known and unknown magic particular things (VT extensions disabled, ISO library avaialble on a remote NFS share with latency problems&hellip; I wasn&rsquo;t able to boot sysrescuecd (nor other recent Live CD I tried), so one of my last option was to attach the VM&rsquo;s virtual disk on the xen host (another VM could have been used too), here are the steps:"><meta itemprop="datePublished" content="2014-02-26T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2014-02-26T00:00:00+00:00" />
+<meta itemprop="wordCount" content="542">
+<meta itemprop="keywords" content="xen,vm," /><meta property="og:title" content="Resizing a VM filesystem from Xen host" />
+<meta property="og:description" content="Resizing the disk and filesystem of a VM I had to add more disk space to a Virtual Machine running under XenServer 6.0. In such situation I ususally do like this:
+ create a snapshot (if possible, sometimes disk space makes it impossible) increase the virtual disk size using XenCenter (running from a Windows Virtual Machine&hellip;) boot Sysrescuecd and resize the filesystem using gparted  But this time, due to some known and unknown magic particular things (VT extensions disabled, ISO library avaialble on a remote NFS share with latency problems&hellip; I wasn&rsquo;t able to boot sysrescuecd (nor other recent Live CD I tried), so one of my last option was to attach the VM&rsquo;s virtual disk on the xen host (another VM could have been used too), here are the steps:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2014/02/26/resizing-a-vm-filesystem-from-xen-host/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2014-02-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2014-02-26T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Resizing a VM filesystem from Xen host"/>
+<meta name="twitter:description" content="Resizing the disk and filesystem of a VM I had to add more disk space to a Virtual Machine running under XenServer 6.0. In such situation I ususally do like this:
+ create a snapshot (if possible, sometimes disk space makes it impossible) increase the virtual disk size using XenCenter (running from a Windows Virtual Machine&hellip;) boot Sysrescuecd and resize the filesystem using gparted  But this time, due to some known and unknown magic particular things (VT extensions disabled, ISO library avaialble on a remote NFS share with latency problems&hellip; I wasn&rsquo;t able to boot sysrescuecd (nor other recent Live CD I tried), so one of my last option was to attach the VM&rsquo;s virtual disk on the xen host (another VM could have been used too), here are the steps:"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Resizing a VM filesystem from Xen host</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Feb 26, 2014</span></div>
+				<h1>Resizing a VM filesystem from Xen host</h1>
+			</header>
+			<div class="content">
+				<h2 id="resizing-the-disk-and-filesystem-of-a-vm">Resizing the disk and filesystem of a VM<a href="#resizing-the-disk-and-filesystem-of-a-vm" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>I had to add more disk space to a Virtual Machine running under
+XenServer 6.0. In such situation I ususally do like this:</p>
+<ul>
+<li>create a snapshot (if possible, sometimes disk space makes it
+impossible)</li>
+<li>increase the virtual disk size using XenCenter (running from a Windows
+Virtual Machine&hellip;)</li>
+<li>boot Sysrescuecd and resize the filesystem using gparted</li>
+</ul>
+<p>But this time, due to some known and unknown magic particular things (VT
+extensions disabled, ISO library avaialble on a remote NFS share with latency
+problems&hellip; I wasn&rsquo;t able to boot sysrescuecd (nor other recent Live CD I
+tried), so one of my last option was to attach the VM&rsquo;s virtual disk on the
+xen host (another VM could have been used too), here are the steps:</p>
+<ul>
+<li>Find xen host uuid</li>
+<li>Find VM uuid</li>
+<li>Find VM&rsquo;s disk VDI uuid</li>
+<li>Create a new VBD for the xen host to plug the VDI in</li>
+<li>Stop the VM</li>
+<li>Plug the VBD</li>
+<li>Resize the partition and filesystem</li>
+<li>unplug and destroy the VBD</li>
+<li>Restart the VM</li>
+</ul>
+<h3 id="hands-on">Hands-on<a href="#hands-on" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>From the xenserver shell:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">hostuuid</span><span class="o">=</span><span class="k">$(</span>xe vm-list name-label<span class="o">=</span><span class="s1">&#39;Control domain on host: xenserver-XXX&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="p">|</span> awk <span class="s1">&#39;/uuid/ {print $5}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">xe vm-list <span class="nv">uuid</span><span class="o">=</span><span class="nv">$hostuuid</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">vmuuid</span><span class="o">=</span><span class="k">$(</span>xe vm-list name-label<span class="o">=</span>xxx.domain.tld <span class="p">|</span> awk <span class="s1">&#39;/uuid/ {print $5}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">xe vm-list <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vmuuid</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">xe vm-disk-list <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vmuuid</span>
+</span></span><span class="line"><span class="cl"><span class="nv">vdiuuid</span><span class="o">=</span>xxxx-xxxx-xxx-xxx-xxxx
+</span></span><span class="line"><span class="cl">xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">vbduuid</span><span class="o">=</span><span class="k">$(</span>xe vbd-create <span class="nv">device</span><span class="o">=</span><span class="m">0</span> vm-uuid<span class="o">=</span><span class="nv">$hostuuid</span> vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="nv">bootable</span><span class="o">=</span><span class="nb">false</span> <span class="nv">mode</span><span class="o">=</span>RW <span class="nv">type</span><span class="o">=</span>Disk<span class="k">)</span>
+</span></span><span class="line"><span class="cl">xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">xe vbd-plug <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vbduuid</span>
+</span></span><span class="line"><span class="cl">xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</span></span></code></pre></div><p>Now the virtual disk of the VM is seen as a local device (/dev/xvda) on
+the xen host, it can be accessed using the standard fdisk, parted, mount
+tools.</p>
+<p>At first I tried to use parted&rsquo;s
+<a href="https://www.gnu.org/software/parted/manual/html_chapter/parted_toc.html#TOC25">resize</a>
+command but it didn&rsquo;t work, so I add to delete and recreate the
+partition manually according to the cylinders.
+(be sure to save the layout of the partitions before messing with
+them&hellip;)
+(and using tmux is highly recommended for such tasks.)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">parted /dev/xvda                                                                                                                                <span class="o">[</span>86/818<span class="o">]</span>
+</span></span><span class="line"><span class="cl">GNU Parted 1.8.1
+</span></span><span class="line"><span class="cl">Using /dev/xvda
+</span></span><span class="line"><span class="cl">Welcome to GNU Parted! Type <span class="s1">&#39;help&#39;</span> to view a list of commands.
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> unit s                                                           
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> print                                                            
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Model: Xen Virtual Block Device <span class="o">(</span>xvd<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Disk /dev/xvda: 83886079s
+</span></span><span class="line"><span class="cl">Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+</span></span><span class="line"><span class="cl">Partition Table: msdos
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Number  Start  End        Size       Type     File system  Flags
+</span></span><span class="line"><span class="cl"> <span class="m">1</span>      2048s  15988735s  15986688s  primary  ext3         boot 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> rm <span class="m">1</span>                                                             
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> mkpart
+</span></span><span class="line"><span class="cl">Partition type?  primary/extended? primary
+</span></span><span class="line"><span class="cl">File system type?  <span class="o">[</span>ext2<span class="o">]</span>? ext3                                           
+</span></span><span class="line"><span class="cl">Start? 2048s
+</span></span><span class="line"><span class="cl">End? 83886078s
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> print                                                            
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Model: Xen Virtual Block Device <span class="o">(</span>xvd<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Disk /dev/xvda: 83886079s
+</span></span><span class="line"><span class="cl">Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+</span></span><span class="line"><span class="cl">Partition Table: msdos
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Number  Start  End        Size       Type     File system  Flags
+</span></span><span class="line"><span class="cl"> <span class="m">1</span>      2048s  83886078s  83884031s  primary  ext3              
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> toggle <span class="m">1</span> boot
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> print
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Model: Xen Virtual Block Device <span class="o">(</span>xvd<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Disk /dev/xvda: 83886079s
+</span></span><span class="line"><span class="cl">Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+</span></span><span class="line"><span class="cl">Partition Table: msdos
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Number  Start  End        Size       Type     File system  Flags
+</span></span><span class="line"><span class="cl"> <span class="m">1</span>      2048s  83886078s  83884031s  primary  ext3         boot 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">(</span>parted<span class="o">)</span> quit                                                             
+</span></span><span class="line"><span class="cl">Information: Don<span class="err">&#39;</span>t forget to update /etc/fstab, <span class="k">if</span> necessary.
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">resize2fs /dev/xvda1    
+</span></span><span class="line"><span class="cl">resize2fs 1.39 <span class="o">(</span>29-May-2006<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Resizing the filesystem on /dev/xvda1 to <span class="m">10485503</span> <span class="o">(</span>4k<span class="o">)</span> blocks.
+</span></span><span class="line"><span class="cl">The filesystem on /dev/xvda1 is now <span class="m">10485503</span> blocks long
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">fsck.ext3 -f /dev/xvda1
+</span></span><span class="line"><span class="cl">e2fsck 1.39 <span class="o">(</span>29-May-2006<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Pass 1: Checking inodes, blocks, and sizes
+</span></span><span class="line"><span class="cl">Pass 2: Checking directory structure
+</span></span><span class="line"><span class="cl">Pass 3: Checking directory connectivity
+</span></span><span class="line"><span class="cl">Pass 4: Checking reference counts
+</span></span><span class="line"><span class="cl">Pass 5: Checking group summary information
+</span></span><span class="line"><span class="cl">/dev/xvda1: 144207/2621440 files <span class="o">(</span>3.3% non-contiguous<span class="o">)</span>, 1506575/10485503 blocks
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">xe vbd-unplug <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vbduuid</span>
+</span></span><span class="line"><span class="cl">xe vbd-destroy <span class="nv">uuid</span><span class="o">=</span><span class="nv">$vbduuid</span>
+</span></span><span class="line"><span class="cl">xe vbd-list vdi-uuid<span class="o">=</span><span class="nv">$vdiuuid</span>
+</span></span></code></pre></div><p>Done, the VM can now be restarted!</p>
+
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://blog.bapt.name/tags/xen">xen</a></span><span class="tag"><a href="https://blog.bapt.name/tags/vm">vm</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>542 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2014-02-26 00:00 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2014/04/07/dependencies-with-hiera-and-create-resources/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>dependencies with hiera and create resources</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2014/02/14/starting-to-play-with-puppet-enterprise/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Starting to play with Puppet Enterprise</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

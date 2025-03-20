@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Using Postifx as a Relay on MacOS">
+<meta itemprop="description" content="Local Postfix relying to Google&rsquo;s SMTP server The intent is to use the postfix system install to relay email to Google&rsquo;s SMTP server.
+Configure mail aliases /etc/aliases is a symlink to /etc/postfix/aliases, it can be updated to redirect root or any other user&rsquo;s email to another address:
+root: my.email@domain.tld userX: my.email@domain.tld Aliases database should updated:
+sudo postalias /etc/postfix/aliases Altering postfix configuration /etc/postfix/main.cf should be tuned:
+myhostname = Baptistes-MacBoo-Pro.local (...) # inet_protocols = all (."><meta itemprop="datePublished" content="2020-04-21T14:53:58+02:00" />
+<meta itemprop="dateModified" content="2020-04-21T14:53:58+02:00" />
+<meta itemprop="wordCount" content="240">
+<meta itemprop="keywords" content="" /><meta property="og:title" content="Using Postifx as a Relay on MacOS" />
+<meta property="og:description" content="Local Postfix relying to Google&rsquo;s SMTP server The intent is to use the postfix system install to relay email to Google&rsquo;s SMTP server.
+Configure mail aliases /etc/aliases is a symlink to /etc/postfix/aliases, it can be updated to redirect root or any other user&rsquo;s email to another address:
+root: my.email@domain.tld userX: my.email@domain.tld Aliases database should updated:
+sudo postalias /etc/postfix/aliases Altering postfix configuration /etc/postfix/main.cf should be tuned:
+myhostname = Baptistes-MacBoo-Pro.local (...) # inet_protocols = all (." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2020/04/21/using-postifx-as-a-relay-on-macos/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-04-21T14:53:58+02:00" />
+<meta property="article:modified_time" content="2020-04-21T14:53:58+02:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Using Postifx as a Relay on MacOS"/>
+<meta name="twitter:description" content="Local Postfix relying to Google&rsquo;s SMTP server The intent is to use the postfix system install to relay email to Google&rsquo;s SMTP server.
+Configure mail aliases /etc/aliases is a symlink to /etc/postfix/aliases, it can be updated to redirect root or any other user&rsquo;s email to another address:
+root: my.email@domain.tld userX: my.email@domain.tld Aliases database should updated:
+sudo postalias /etc/postfix/aliases Altering postfix configuration /etc/postfix/main.cf should be tuned:
+myhostname = Baptistes-MacBoo-Pro.local (...) # inet_protocols = all (."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Using Postifx as a Relay on MacOS</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Apr 21, 2020</span></div>
+				<h1>Using Postifx as a Relay on MacOS</h1>
+			</header>
+			<div class="content">
+				<h2 id="local-postfix-relying-to-googles-smtp-server">Local Postfix relying to Google&rsquo;s SMTP server<a href="#local-postfix-relying-to-googles-smtp-server" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The intent is to use the <code>postfix</code> system install to relay email to Google&rsquo;s
+SMTP server.</p>
+<h2 id="configure-mail-aliases">Configure mail aliases<a href="#configure-mail-aliases" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p><code>/etc/aliases</code> is a symlink to <code>/etc/postfix/aliases</code>, it can be updated to
+redirect <code>root</code> or any other user&rsquo;s email to another address:</p>
+<pre tabindex="0"><code class="language-mailaliases" data-lang="mailaliases">root: my.email@domain.tld
+userX: my.email@domain.tld
+</code></pre><p>Aliases database should updated:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo postalias /etc/postfix/aliases
+</span></span></code></pre></div><h2 id="altering-postfix-configuration">Altering postfix configuration<a href="#altering-postfix-configuration" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p><code>/etc/postfix/main.cf</code> should be tuned:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">myhostname</span> <span class="o">=</span> <span class="s">Baptistes-MacBoo-Pro.local</span>
+</span></span><span class="line"><span class="cl"><span class="na">(...)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># inet_protocols = all</span>
+</span></span><span class="line"><span class="cl"><span class="na">(...)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># https://www.howtoforge.com/tutorial/configure-postfix-to-use-gmail-as-a-mail-relay/</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># https://www.justinsilver.com/technology/osx/send-emails-mac-os-x-postfix-gmail-relay/</span>
+</span></span><span class="line"><span class="cl"><span class="na">relayhost</span> <span class="o">=</span> <span class="s">[smtp.gmail.com]:587</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_use_tls</span> <span class="o">=</span> <span class="s">yes</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtpd_sasl_auth_enable</span> <span class="o">=</span> <span class="s">yes</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_sasl_auth_enable</span> <span class="o">=</span> <span class="s">yes</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_sasl_password_maps</span> <span class="o">=</span> <span class="s">hash:/etc/postfix/sasl_passwd</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_use_tls</span><span class="o">=</span><span class="s">yes</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_tls_security_level</span><span class="o">=</span><span class="s">encrypt</span>
+</span></span><span class="line"><span class="cl"><span class="na">tls_random_source</span><span class="o">=</span><span class="s">dev:/dev/urandom</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_sasl_security_options</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="na">smtp_sasl_mechanism_filter</span> <span class="o">=</span> <span class="s">AUTH LOGIN</span>
+</span></span><span class="line"><span class="cl"><span class="na">inet_protocols</span> <span class="o">=</span> <span class="s">ipv4</span>
+</span></span><span class="line"><span class="cl"><span class="na">virtual_alias_maps</span> <span class="o">=</span> <span class="s">hash:/etc/postfix/virtual</span>
+</span></span></code></pre></div><h2 id="adding-virtual-entries">Adding virtual entries<a href="#adding-virtual-entries" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>In order to map local address to fully qualified address, <code>/etc/postfix/virtual</code>
+should be updated:</p>
+<pre tabindex="0"><code class="language-raw" data-lang="raw">baptiste my.email@domain.tld
+baptiste@Baptistes-MacBook-Pro.local my.email@domain.tld
+</code></pre><p>Then the virtual map should be updated</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo postmap /etc/postfix/virtual
+</span></span></code></pre></div><h2 id="starting-the-local-postfix-as-a-daemon">Starting the local postfix as a daemon<a href="#starting-the-local-postfix-as-a-daemon" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo postfix start
+</span></span></code></pre></div><h2 id="checking-postfix-logs">Checking postfix logs<a href="#checking-postfix-logs" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">log stream --predicate <span class="s1">&#39;(process == &#34;smtpd&#34;) \
+</span></span></span><span class="line"><span class="cl"><span class="s1">  || (process == &#34;smtp&#34;) \
+</span></span></span><span class="line"><span class="cl"><span class="s1">  || (process == &#34;master&#34;)&#39;</span> --info
+</span></span></code></pre></div><h2 id="checking-conf-after-a-macos-update">Checking conf after a MacOS update<a href="#checking-conf-after-a-macos-update" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>When MacOS gets updated it can alter the configuration changes and revert to
+default settings or let you review the changes they made to the default
+configuration files. You can check any <code>~orig</code> files having been created under
+<code>/etc/postfix</code> as well as default files ending in <code>_default</code> available under
+<code>~/Desktop/Relocated Items/Configuration</code>.</p>
+<h3 id="links">Links<a href="#links" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li><a href="https://knazarov.com/posts/setting_up_postfix_on_os_x/">https://knazarov.com/posts/setting_up_postfix_on_os_x/</a></li>
+<li><a href="https://www.garron.me/en/mac/postfix-relay-gmail-mac-os-x-local-smtp.html">https://www.garron.me/en/mac/postfix-relay-gmail-mac-os-x-local-smtp.html</a></li>
+<li><a href="https://www.linode.com/docs/email/postfix/postfix-smtp-debian7/">https://www.linode.com/docs/email/postfix/postfix-smtp-debian7/</a></li>
+<li><a href="https://www.howtoforge.com/tutorial/configure-postfix-to-use-gmail-as-a-mail-relay/">https://www.howtoforge.com/tutorial/configure-postfix-to-use-gmail-as-a-mail-relay/</a></li>
+<li><a href="https://benjaminrojas.net/configuring-postfix-to-send-mail-from-mac-os-x-mountain-lion/">https://benjaminrojas.net/configuring-postfix-to-send-mail-from-mac-os-x-mountain-lion/</a></li>
+<li><a href="https://www.cmsimike.com/blog/2011/10/30/setting-up-local-mail-delivery-on-ubuntu-with-postfix-and-mutt/">https://www.cmsimike.com/blog/2011/10/30/setting-up-local-mail-delivery-on-ubuntu-with-postfix-and-mutt/</a></li>
+<li><a href="https://discussions.apple.com/thread/8594103">https://discussions.apple.com/thread/8594103</a></li>
+<li><a href="https://www.justinsilver.com/technology/osx/send-emails-mac-os-x-postfix-gmail-relay/">https://www.justinsilver.com/technology/osx/send-emails-mac-os-x-postfix-gmail-relay/</a></li>
+<li><a href="https://unix.stackexchange.com/questions/128004/mutt-not-sending-email-when-specifying-smtp-server">https://unix.stackexchange.com/questions/128004/mutt-not-sending-email-when-specifying-smtp-server</a></li>
+<li><a href="https://www.garron.me/en/mac/postfix-relay-gmail-mac-os-x-local-smtp.html">https://www.garron.me/en/mac/postfix-relay-gmail-mac-os-x-local-smtp.html</a></li>
+<li><a href="https://annvix.com/using_mutt_on_os_x">https://annvix.com/using_mutt_on_os_x</a></li>
+<li><a href="https://knazarov.com/posts/setting_up_postfix_on_os_x/">https://knazarov.com/posts/setting_up_postfix_on_os_x/</a>
+<a href="https://www.cryptomonkeys.com/2015/09/mutt-and-msmtp-on-osx/">https://www.cryptomonkeys.com/2015/09/mutt-and-msmtp-on-osx/</a></li>
+</ul>
+
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>240 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2020-04-21 12:53 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2020/04/25/monitoring-with-sensu/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Monitoring with Sensu</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2020/04/14/hacking-cheatsheet/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Hacking Cheatsheet</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

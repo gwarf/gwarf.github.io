@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Mail server migration">
+<meta itemprop="description" content="Goal Migrating a mail server from one server (FreeBSD physical server) to another one (Debian virtual machine) without loosing mails.
+Mail server Retrieving mails from other email providers  fetchmail (cron)  crontab -e */3 * * * * $HOME/bin/getmymailnow &gt; /dev/null ~/bin/getmymailnow:
+#!/bin/sh LOCKFILE=&#34;$0.lock&#34; PATH=&#34;/bin:/usr/bin&#34; if [ -f &#34;$LOCKFILE&#34; ]; then PID=$(cat &#34;$LOCKFILE&#34;) if ! ps $PID 2&gt; /dev/null; then echo &#34;Ignoring stalled lock file&#34; &gt;&amp;2 else echo &#34;Script already running (PID=$PID)&#34; &gt;&amp;2 exit 1 fi fi fetchmail -a -s -m &#34;procmail -d %T&#34; 2&gt;&amp;1 echo $!"><meta itemprop="datePublished" content="2014-01-18T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2014-01-18T00:00:00+00:00" />
+<meta itemprop="wordCount" content="461">
+<meta itemprop="keywords" content="mail,syadmin," /><meta property="og:title" content="Mail server migration" />
+<meta property="og:description" content="Goal Migrating a mail server from one server (FreeBSD physical server) to another one (Debian virtual machine) without loosing mails.
+Mail server Retrieving mails from other email providers  fetchmail (cron)  crontab -e */3 * * * * $HOME/bin/getmymailnow &gt; /dev/null ~/bin/getmymailnow:
+#!/bin/sh LOCKFILE=&#34;$0.lock&#34; PATH=&#34;/bin:/usr/bin&#34; if [ -f &#34;$LOCKFILE&#34; ]; then PID=$(cat &#34;$LOCKFILE&#34;) if ! ps $PID 2&gt; /dev/null; then echo &#34;Ignoring stalled lock file&#34; &gt;&amp;2 else echo &#34;Script already running (PID=$PID)&#34; &gt;&amp;2 exit 1 fi fi fetchmail -a -s -m &#34;procmail -d %T&#34; 2&gt;&amp;1 echo $!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2014/01/18/mail-server-migration/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2014-01-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2014-01-18T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mail server migration"/>
+<meta name="twitter:description" content="Goal Migrating a mail server from one server (FreeBSD physical server) to another one (Debian virtual machine) without loosing mails.
+Mail server Retrieving mails from other email providers  fetchmail (cron)  crontab -e */3 * * * * $HOME/bin/getmymailnow &gt; /dev/null ~/bin/getmymailnow:
+#!/bin/sh LOCKFILE=&#34;$0.lock&#34; PATH=&#34;/bin:/usr/bin&#34; if [ -f &#34;$LOCKFILE&#34; ]; then PID=$(cat &#34;$LOCKFILE&#34;) if ! ps $PID 2&gt; /dev/null; then echo &#34;Ignoring stalled lock file&#34; &gt;&amp;2 else echo &#34;Script already running (PID=$PID)&#34; &gt;&amp;2 exit 1 fi fi fetchmail -a -s -m &#34;procmail -d %T&#34; 2&gt;&amp;1 echo $!"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Mail server migration</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Jan 18, 2014</span></div>
+				<h1>Mail server migration</h1>
+			</header>
+			<div class="content">
+				<h2 id="goal">Goal<a href="#goal" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Migrating a mail server from one server (FreeBSD physical server) to another
+one (Debian virtual machine) without loosing mails.</p>
+<h2 id="mail-server">Mail server<a href="#mail-server" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="retrieving-mails-from-other-email-providers">Retrieving mails from other email providers<a href="#retrieving-mails-from-other-email-providers" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>fetchmail (cron)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">crontab -e
+</span></span><span class="line"><span class="cl">*/3 * * * * <span class="nv">$HOME</span>/bin/getmymailnow &gt; /dev/null
+</span></span></code></pre></div><p><code>~/bin/getmymailnow</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">LOCKFILE</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$0</span><span class="s2">.lock&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PATH</span><span class="o">=</span><span class="s2">&#34;/bin:/usr/bin&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -f <span class="s2">&#34;</span><span class="nv">$LOCKFILE</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">PID</span><span class="o">=</span><span class="k">$(</span>cat <span class="s2">&#34;</span><span class="nv">$LOCKFILE</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> ! ps <span class="nv">$PID</span> 2&gt; /dev/null<span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Ignoring stalled lock file&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl">  <span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Script already running (PID=</span><span class="nv">$PID</span><span class="s2">)&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">  <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">fetchmail -a -s -m <span class="s2">&#34;procmail -d %T&#34;</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$!</span> &gt; <span class="nv">$LOCKFILE</span>
+</span></span><span class="line"><span class="cl"><span class="nb">wait</span>
+</span></span><span class="line"><span class="cl">rm <span class="s2">&#34;</span><span class="nv">$LOCKFILE</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">0</span>
+</span></span></code></pre></div><h3 id="tools-used-for-localvirtual-mail-handling">Tools used for local/virtual mail handling<a href="#tools-used-for-localvirtual-mail-handling" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>Postfix</li>
+<li>Dovecot</li>
+<li>Spamassassin</li>
+<li>roundcube</li>
+<li>procmail</li>
+<li>fetchmail</li>
+<li>bind</li>
+</ul>
+<h2 id="initial-step">Initial step<a href="#initial-step" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li>
+<p>Create required users on new server</p>
+</li>
+<li>
+<p>Configure postfix on new server as it was on old one</p>
+<ul>
+<li>remove mail domain from mydestination to old server</li>
+<li>set relayhost to old server</li>
+</ul>
+</li>
+<li>
+<p>If different domain should be relayed to different places:</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">transport_maps</span> <span class="o">=</span> hash:/etc/postfix/transport_maps
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">domain.tld smtp:<span class="o">[</span>mail.plop.tld<span class="o">]</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">postmap /etc/postfix/transport_maps
+</span></span><span class="line"><span class="cl">service postfix restart
+</span></span></code></pre></div><ul>
+<li>Update MX in DNS conf to use new server</li>
+</ul>
+<p>All mails should now go to new server, and this one will relay mails to old server.</p>
+<ul>
+<li>Install dovecot on new server</li>
+<li>Migrate and update conf, see <a href="http://wiki2.dovecot.org/Upgrading/2.0">upgrading dovecot</a></li>
+<li>Migrate/update required certificates</li>
+<li>Make an initial copy of the mailstores to the new server using rsync</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">rsync -avz --stats ~plop/Maildir -e ssh plop@new.server.tld:
+</span></span></code></pre></div><ul>
+<li>Validates that imap/dovecot is working as expected</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">openssl s_client -connect new.server.tld:993
+</span></span><span class="line"><span class="cl">a01 login plop the_PassWord
+</span></span><span class="line"><span class="cl">a02 SELECT INBOX
+</span></span><span class="line"><span class="cl">a03 <span class="nb">logout</span>
+</span></span></code></pre></div><ul>
+<li>
+<p>Copy spamassassin conf (global/local) to new server (and review it)</p>
+</li>
+<li>
+<p>Copy procmailconf to new server (and review it)</p>
+</li>
+<li>
+<p>Copy fetchmail conf (global/local) to new server (and review it)</p>
+</li>
+<li>
+<p>Install postgresql on new server</p>
+</li>
+<li>
+<p>Migrate roundcube postgres database/user</p>
+<ul>
+<li>Database dump have to be updated as postgres user name is different</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sed -i <span class="s1">&#39;s/pgsql/postgres/g&#39;</span> roundcube.sql
+</span></span></code></pre></div><ul>
+<li>
+<p>Install roundcube on new server</p>
+</li>
+<li>
+<p>Update roundcube conf</p>
+</li>
+<li>
+<p>Validate that roundcube is working as expected</p>
+</li>
+<li>
+<p>Wait at least a week to ensure that DNS will be up-to-date with new MX (and
+check that you have a small DNS TTL)</p>
+</li>
+<li>
+<p>Update DNS entries for SPF</p>
+</li>
+</ul>
+<h2 id="final-step---including-small-downtime">Final step - including small downtime<a href="#final-step---including-small-downtime" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li>Stops email fetching on old server</li>
+<li>Stops postfix on old server</li>
+<li>Stops dovecot on old server</li>
+<li>Stops roundcube vhost on old server</li>
+<li>Make an incremental copy of the mailstores, deleting no more present emails using rsync</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">rsync -avz --delete-after --stats ~plop/Maildir -e ssh plop@new.server.tld:
+</span></span></code></pre></div><ul>
+<li>Configure postfix on new server:
+<ul>
+<li>disable relaying to old server</li>
+<li>fix mydestination</li>
+</ul>
+</li>
+<li>Switch IPs (or hostnames if not possible) to new server</li>
+<li>Update required hostnames in new server</li>
+<li>Update roundcube postgres database</li>
+<li>Enable email fetching on new server</li>
+<li>Configure postfix on old server to relay mails to new server</li>
+<li>Clean old server</li>
+<li>Clean DNS conf</li>
+</ul>
+<p>No emails should be lost as if the server is not available, the contacting
+servers should hold and resend the mails.</p>
+
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://blog.bapt.name/tags/mail">mail</a></span><span class="tag"><a href="https://blog.bapt.name/tags/syadmin">syadmin</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>461 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2014-01-18 00:00 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2014/02/05/centralized-docs-for-devs/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>centralized docs for devs</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2014/01/17/creating-vagrant-base-boxes/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Creating Vagrant base boxes</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>vm on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/vm/</link>
+    <description>Recent content in vm on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Wed, 26 Feb 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.bapt.name/tags/vm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Resizing a VM filesystem from Xen host</title>
+      <link>https://blog.bapt.name/2014/02/26/resizing-a-vm-filesystem-from-xen-host/</link>
+      <pubDate>Wed, 26 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.bapt.name/2014/02/26/resizing-a-vm-filesystem-from-xen-host/</guid>
+      <description>Resizing the disk and filesystem of a VM I had to add more disk space to a Virtual Machine running under XenServer 6.0. In such situation I ususally do like this:
+ create a snapshot (if possible, sometimes disk space makes it impossible) increase the virtual disk size using XenCenter (running from a Windows Virtual Machine&amp;hellip;) boot Sysrescuecd and resize the filesystem using gparted  But this time, due to some known and unknown magic particular things (VT extensions disabled, ISO library avaialble on a remote NFS share with latency problems&amp;hellip; I wasn&amp;rsquo;t able to boot sysrescuecd (nor other recent Live CD I tried), so one of my last option was to attach the VM&amp;rsquo;s virtual disk on the xen host (another VM could have been used too), here are the steps:</description>
+    </item>
+    
+  </channel>
+</rss>

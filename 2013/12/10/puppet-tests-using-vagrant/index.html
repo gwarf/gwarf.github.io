@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Puppet tests using Vagrant">
+<meta itemprop="description" content="XXX Work in progress.
+Intro Read first
+ http://www.example42.com/?q=Example42%20Puppet%20Playground http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/ http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/ http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent http://java.dzone.com/articles/test-puppet-config-existing https://github.com/garethr/puppetmaster-vagrant  Prerequisites  git VirtualBox Vagrant  yaourt -S git yaourt -S virtualbox virtualbox-guest-iso yaourt -S vagrant VMs list  One puppet master running Debian 7 64bits One puppet client running Debian 7 64bits One puppet client running Scientific Linux 5.x 64 bits One puppet client running Scientific Linux 6.x 64 bits One puppet client running CentOS 6."><meta itemprop="datePublished" content="2013-12-10T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2013-12-10T00:00:00+00:00" />
+<meta itemprop="wordCount" content="698">
+<meta itemprop="keywords" content="puppet,vagrant," /><meta property="og:title" content="Puppet tests using Vagrant" />
+<meta property="og:description" content="XXX Work in progress.
+Intro Read first
+ http://www.example42.com/?q=Example42%20Puppet%20Playground http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/ http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/ http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent http://java.dzone.com/articles/test-puppet-config-existing https://github.com/garethr/puppetmaster-vagrant  Prerequisites  git VirtualBox Vagrant  yaourt -S git yaourt -S virtualbox virtualbox-guest-iso yaourt -S vagrant VMs list  One puppet master running Debian 7 64bits One puppet client running Debian 7 64bits One puppet client running Scientific Linux 5.x 64 bits One puppet client running Scientific Linux 6.x 64 bits One puppet client running CentOS 6." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.bapt.name/2013/12/10/puppet-tests-using-vagrant/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2013-12-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2013-12-10T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Puppet tests using Vagrant"/>
+<meta name="twitter:description" content="XXX Work in progress.
+Intro Read first
+ http://www.example42.com/?q=Example42%20Puppet%20Playground http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/ http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/ http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/ http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent http://java.dzone.com/articles/test-puppet-config-existing https://github.com/garethr/puppetmaster-vagrant  Prerequisites  git VirtualBox Vagrant  yaourt -S git yaourt -S virtualbox virtualbox-guest-iso yaourt -S vagrant VMs list  One puppet master running Debian 7 64bits One puppet client running Debian 7 64bits One puppet client running Scientific Linux 5.x 64 bits One puppet client running Scientific Linux 6.x 64 bits One puppet client running CentOS 6."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Puppet tests using Vagrant</title>
+	<link rel="stylesheet" href="https://blog.bapt.name/css/style.min.037b6ee8f8c1baab6a3d0a9da11c3ff18a7552471f16c59fd98538d5ce99208b.css" integrity="sha256-A3tu6PjBuqtqPQqdoRw/8Yp1UkcfFsWf2YU41c6ZIIs=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://blog.bapt.name/">J&#39;aime pas les piles</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://blog.bapt.name/posts/">Posts</a>
+				<a href="https://blog.bapt.name/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/gwarf" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://framapiaf.org/@gwarf" target="_blank" rel="noopener me" title="Mastodon"><svg xmlns="http://www.w3.org/2000/svg" class="feather feather-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a><a href="https://linkedin.com/in/baptistegrenier" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="mailto:baptiste@bapt.name" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://blog.bapt.name/posts/">Posts</a></li>
+			<li><a href="https://blog.bapt.name/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Dec 10, 2013</span></div>
+				<h1>Puppet tests using Vagrant</h1>
+			</header>
+			<div class="content">
+				<p>XXX Work in progress.</p>
+<h2 id="intro">Intro<a href="#intro" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Read first</p>
+<ul>
+<li><a href="http://www.example42.com/?q=Example42%20Puppet%20Playground">http://www.example42.com/?q=Example42%20Puppet%20Playground</a></li>
+<li><a href="http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/">http://grahamgilbert.com/blog/2013/02/13/building-a-test-puppet-master-with-vagrant/</a></li>
+<li><a href="http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/">http://theholyjava.wordpress.com/2013/09/03/test-puppet-config-of-an-existing-node-using-puppet-master-inside-vagrant/</a></li>
+<li><a href="http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/">http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/</a></li>
+<li><a href="http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/">http://journal.ryanmccue.info/209/vagrant-puppet-master-pt-1/</a></li>
+<li><a href="http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/">http://brokenhaze.com/blog/2013/07/25/puppet-workflow-with-vagrant/</a></li>
+<li><a href="http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent">http://stackoverflow.com/questions/14168588/vagrant-running-a-puppet-master-with-a-puppet-agent</a></li>
+<li><a href="http://java.dzone.com/articles/test-puppet-config-existing">http://java.dzone.com/articles/test-puppet-config-existing</a></li>
+<li><a href="https://github.com/garethr/puppetmaster-vagrant">https://github.com/garethr/puppetmaster-vagrant</a></li>
+</ul>
+<h2 id="prerequisites">Prerequisites<a href="#prerequisites" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li><a href="http://git-scm.com/">git</a></li>
+<li><a href="https://www.virtualbox.org/">VirtualBox</a></li>
+<li><a href="http://www.vagrantup.com/">Vagrant</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">yaourt -S git
+</span></span><span class="line"><span class="cl">yaourt -S virtualbox virtualbox-guest-iso
+</span></span><span class="line"><span class="cl">yaourt -S vagrant
+</span></span></code></pre></div><h2 id="vms-list">VMs list<a href="#vms-list" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li>One puppet master running Debian 7 64bits</li>
+<li>One puppet client running Debian 7 64bits</li>
+<li>One puppet client running Scientific Linux 5.x 64 bits</li>
+<li>One puppet client running Scientific Linux 6.x 64 bits</li>
+<li>One puppet client running CentOS 6.x 64 bits</li>
+</ul>
+<h2 id="planned-workflow">Planned workflow<a href="#planned-workflow" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h2 id="boxes-urls">Boxes URLs<a href="#boxes-urls" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="boxes-repositories">Boxes repositories<a href="#boxes-repositories" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li><a href="http://puppet-vagrant-boxes.puppetlabs.com/">http://puppet-vagrant-boxes.puppetlabs.com/</a></li>
+<li><a href="http://www.vagrantbox.es/">http://www.vagrantbox.es/</a></li>
+</ul>
+<h3 id="boxes-list">Boxes list<a href="#boxes-list" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>Debian 7 64 bits - <a href="http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box">http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box</a></li>
+<li>Scientific Linux 5.x 64 bits -</li>
+<li>Scientific Linux 6.x 64 bits -  <a href="http://lyte.id.au/vagrant/sl6-64-lyte.box">http://lyte.id.au/vagrant/sl6-64-lyte.box</a></li>
+<li>CentOS 6.x 64 bits - <a href="http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box">http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box</a></li>
+</ul>
+<h2 id="box-installation">Box installation<a href="#box-installation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Box installation will take some time as the boxes have to be downloaded locally.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">vagrant box add debian7-64 http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box
+</span></span><span class="line"><span class="cl">vagrant box add sl6-64 http://lyte.id.au/vagrant/sl6-64-lyte.box
+</span></span><span class="line"><span class="cl">vagrant box add centos6-64 http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box
+</span></span></code></pre></div><h2 id="vagrant-configuration">Vagrant configuration<a href="#vagrant-configuration" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Puppet will be boostraped using a small shell script</p>
+<p><code>shell/base.sh</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>id -u<span class="k">)</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s1">&#39;This script must be run as root.&#39;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> which puppet &gt; /dev/null 2&gt;<span class="p">&amp;</span>1<span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s1">&#39;Puppet is already installed&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">exit</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add puppetlabs repo definitions</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;deb http://apt.puppetlabs.com wheezy main&#39;</span> &gt; /etc/apt/sources.list.d/puppetlabs.list
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;deb http://apt.puppetlabs.com wheezy dependencies&#39;</span> &gt; /etc/apt/sources.list.d/puppetlabs-dependencies.list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add puppetlabs repo key</span>
+</span></span><span class="line"><span class="cl">apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Update packages list</span>
+</span></span><span class="line"><span class="cl">aptitude update
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Upgrade system</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Not working yet due to debconf wanting input</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#aptitude -V -y upgrade</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#aptitude -V -y dist-upgrade</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install puppet</span>
+</span></span><span class="line"><span class="cl">aptitude -y install puppet
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;Puppet successfully installed&#39;</span>
+</span></span></code></pre></div><p>Then initial role will be set using another shell script</p>
+<p><code>shell/role.sh</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>hostname<span class="k">)</span> <span class="o">=</span> <span class="s1">&#39;puppet&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s1">&#39;role=puppetmaster&#39;</span> &gt;&gt; /etc/company.conf
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>hostname<span class="k">)</span> <span class="o">=</span> <span class="s1">&#39;client&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s1">&#39;role=puppet&#39;</span> &gt;&gt; /etc/company.conf
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></div><p>And the puppetmaster is boostraped using the puppet apply provider.
+The client will get its configuration from the puppetmaster using the
+puppet agent provider.</p>
+<p>Two directories from the host are made available to the guest, they
+contain the puppet modules that will be used for the puppetmaster
+bootstrap:</p>
+<ul>
+<li>Local puppet modules are available in the relatvie ../../dist
+directory</li>
+<li>A local copy of the remote puppet modules managed using the Puppetfile
+is made using r10k (using a symbolicaly linked Puppetfile)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">gem install r10k
+</span></span><span class="line"><span class="cl">r10k -v INFO puppetfile install
+</span></span></code></pre></div><p><code>Vagrantfile</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="line"><span class="cl"><span class="c1"># -*- mode: ruby -*-</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># vi: set ft=ruby :</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Vagrantfile API/syntax version. Don&#39;t touch unless you know what you&#39;re doing!</span>
+</span></span><span class="line"><span class="cl"><span class="no">VAGRANTFILE_API_VERSION</span> <span class="o">=</span> <span class="s2">&#34;2&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="no">VAGRANTFILE_API_VERSION</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1"># Every Vagrant virtual environment requires a box to build off of.</span>
+</span></span><span class="line"><span class="cl">  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&#34;debian7-64-nocm&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1"># The url from where the &#39;config.vm.box&#39; box will be fetched if it</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># doesn&#39;t already exist on the user&#39;s system.</span>
+</span></span><span class="line"><span class="cl">  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box_url</span> <span class="o">=</span> <span class="s2">&#34;http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1"># Setup the Puppet master</span>
+</span></span><span class="line"><span class="cl">  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="ss">:master</span> <span class="k">do</span> <span class="o">|</span><span class="n">master</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Configure memory</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="ss">:virtualbox</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vb</span><span class="o">.</span><span class="n">customize</span> <span class="o">[</span><span class="s2">&#34;modifyvm&#34;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">&#34;--memory&#34;</span><span class="p">,</span> <span class="s2">&#34;1024&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Set hostname - role will be set based onto it</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&#34;puppet.local&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Shell provisionner for bootstrapping puppet agent</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;shell/base.sh&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Shell provisionner for bootstrapping gnubila conf</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;shell/role.sh&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Share puppet develop branch as puppet production folder</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span>  <span class="s2">&#34;../../../puppet&#34;</span><span class="p">,</span> <span class="s2">&#34;/puppet&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span>  <span class="s2">&#34;../../hieradata&#34;</span><span class="p">,</span> <span class="s2">&#34;/vagrant/hieradata&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Create a puppetmaster using puppet apply</span>
+</span></span><span class="line"><span class="cl">    <span class="n">master</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="ss">:puppet</span> <span class="k">do</span> <span class="o">|</span><span class="n">puppet</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># Path on host to puppet manifests</span>
+</span></span><span class="line"><span class="cl">      <span class="n">puppet</span><span class="o">.</span><span class="n">manifests_path</span> <span class="o">=</span> <span class="s2">&#34;../../manifests&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># Relative path to the default manifest</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># Path on host to puppet modules</span>
+</span></span><span class="line"><span class="cl">      <span class="n">puppet</span><span class="o">.</span><span class="n">module_path</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&#34;../../dist&#34;</span><span class="p">,</span> <span class="s2">&#34;modules&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">puppet</span><span class="o">.</span><span class="n">manifest_file</span>  <span class="o">=</span> <span class="s2">&#34;site.pp&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># Path on host to hiera.yaml</span>
+</span></span><span class="line"><span class="cl">      <span class="n">puppet</span><span class="o">.</span><span class="n">hiera_config_path</span> <span class="o">=</span> <span class="s2">&#34;puppet/hiera.yaml&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># Working directory on the guest</span>
+</span></span><span class="line"><span class="cl">      <span class="n">puppet</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="s1">&#39;/vagrant&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="ss">:client</span> <span class="k">do</span> <span class="o">|</span><span class="n">client</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Configure memory</span>
+</span></span><span class="line"><span class="cl">    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="ss">:virtualbox</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vb</span><span class="o">.</span><span class="n">customize</span> <span class="o">[</span><span class="s2">&#34;modifyvm&#34;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">&#34;--memory&#34;</span><span class="p">,</span> <span class="s2">&#34;1024&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Set hostname - role will be set based onto it</span>
+</span></span><span class="line"><span class="cl">    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&#34;client.local&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Shell provisionner for bootstrapping puppet agent</span>
+</span></span><span class="line"><span class="cl">    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;base.sh&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Shell provisionner for bootstrapping gnubila conf</span>
+</span></span><span class="line"><span class="cl">    <span class="n">client</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&#34;shell&#34;</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s2">&#34;role.sh&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># TODO Configure server using puppet agent against the master vm</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>A copy of the hiera.yaml has been made with a custom datadir
+configuration to allow puppet apply to find the conf exposed into the vm
+by Vagrant.</p>
+<h2 id="go-play">Go play!<a href="#go-play" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The boxes are started using</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">vagrant up
+</span></span></code></pre></div><ul>
+<li>Connect using ssh</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">vagrant ssh master
+</span></span><span class="line"><span class="cl">vagrant ssh client
+</span></span></code></pre></div><h2 id="later">Later<a href="#later" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="creating-custom-boxes-using-veewee">Creating custom boxes using veewee<a href="#creating-custom-boxes-using-veewee" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li><a href="https://github.com/jedi4ever/veewee">https://github.com/jedi4ever/veewee</a></li>
+<li><a href="https://github.com/puppetlabs/puppet-vagrant-boxes">https://github.com/puppetlabs/puppet-vagrant-boxes</a></li>
+</ul>
+
+			</div>
+
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://blog.bapt.name/tags/puppet">puppet</a></span><span class="tag"><a href="https://blog.bapt.name/tags/vagrant">vagrant</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>698 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2013-12-10 00:00 &#43;0000</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://blog.bapt.name/2013/12/11/node-less-puppet-setup-using-hiera/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Node-less puppet setup using Hiera</span>
+			</a>
+			<a class="prev-post" href="https://blog.bapt.name/2013/10/14/blog-up-your-hands/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Blog up your hands</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2025 <a href="https://blog.bapt.name/">Baptiste Grenier</a> &#183; <a href="https://http://www.wtfpl.net/" target="_blank" rel="noopener">WTFPL</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://blog.bapt.name/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://blog.bapt.name/js/bundle.min.8256b8724b9578bbdf6d6f04c894255bc760e78e8a2d60ec0a91ea993acd3b77.js" integrity="sha256-gla4ckuVeLvfbW8EyJQlW8dg546KLWDsCpHqmTrNO3c=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

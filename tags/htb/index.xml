@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>htb on J&#39;aime pas les piles</title>
+    <link>https://blog.bapt.name/tags/htb/</link>
+    <description>Recent content in htb on J&#39;aime pas les piles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under WTFPL.</copyright>
+    <lastBuildDate>Sun, 12 Apr 2020 11:42:34 +0200</lastBuildDate><atom:link href="https://blog.bapt.name/tags/htb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Adventures with Pentesting</title>
+      <link>https://blog.bapt.name/2020/04/12/adventures-with-pentesting/</link>
+      <pubDate>Sun, 12 Apr 2020 11:42:34 +0200</pubDate>
+      
+      <guid>https://blog.bapt.name/2020/04/12/adventures-with-pentesting/</guid>
+      <description>Learning by doing with Hack The Box (HTB) During those locked down times I&amp;rsquo;ve been starting to play with Hack The Box, an online platform allowing to do Penetration Testing, using a lab of Virtual Machines designed for this.
+It&amp;rsquo;s some kind of gamified hacking: you have a profile, you earn points and you can level up. At HTB I&amp;rsquo;m gwarf.
+It&amp;rsquo;s a great way of starting to learn pentesting without causing troubles and in a legit environment.</description>
+    </item>
+    
+  </channel>
+</rss>
